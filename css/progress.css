@@ -1,0 +1,38 @@
+#progressbar {
+	overflow: hidden;
+	background-color: red;
+	border-radius: 10px;
+	position: absolute;
+	top: 0px; left: 50%;
+	margin-left: -120px;
+	width: 240px;
+	height: 20px;
+}
+
+#progressbar .text {
+	position: absolute;
+	left: 0px; right: 0px;
+	top: 0px; bottom: 0px;
+	line-height: 20px;
+	font-size: 14px;
+}
+
+#progressbar .indicator {
+	overflow: hidden;
+	position: absolute;
+	border-radius: 10px;
+	left: 0px; top: 0px;
+	width: 240px;
+	height: 20px;
+}
+
+/* fixes issue on webkit */
+/* rounder corners don't hide */
+#progressbar .indicator .bg {
+	background-color: green;
+	height: 20px; width: 50%;
+}
+
+#progressbar .text {
+	text-align: center;
+}

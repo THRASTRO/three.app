@@ -11,6 +11,9 @@ var app = new THREEAPP.App(vp, {
 		THREEAPP.Plugin.WebGLRenderer,
 		THREEAPP.Plugin.PerspectiveCamera,
 		THREEAPP.Plugin.TrackballControls,
+		// asset loading and status
+		THREEAPP.Plugin.Loader,
+		THREEAPP.Plugin.Progress,
 	],
 	// autostart
 	start: true

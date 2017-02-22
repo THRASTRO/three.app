@@ -41,6 +41,18 @@ webmerge.includeJS('/src/Mixins/Events.js?DE4D9744425C');
 ;
 webmerge.includeJS('/src/Mixins/Plugin.js?215BA68FBE9F');
 ;
+webmerge.includeJS('/src/Mixins/Resources.js?286CA7C1DB60');
+;
+webmerge.includeJS('/lib/loaders/ArrayLoader.js?093BACD718E4');
+;
+webmerge.includeJS('/lib/loaders/BlobLoader.js?24E2470A546D');
+;
+webmerge.includeJS('/lib/loaders/DataLoader.js?3A27679DA1E0');
+;
+webmerge.includeJS('/lib/loaders/JsonLoader.js?917A5CA6DF44');
+;
+webmerge.includeJS('/lib/loaders/TextLoader.js?DE266EE46221');
+;
 webmerge.includeJS('/src/Base/Object3D.js?936DFA802CC2');
 ;
 webmerge.includeJS('/src/Base/Scene.js?EF60849AA383');
@@ -57,6 +69,12 @@ webmerge.includeJS('/src/Plugins/PerspectiveCamera.js?77C36357028E');
 ;
 webmerge.includeJS('/src/Plugins/TrackballControls.js?84E36CCADD17');
 ;
+webmerge.includeJS('/src/Plugins/Loader.js?82228777C0B1');
+;
+webmerge.includeJS('/src/Plugins/Progress.js?411BFFFD0FDE');
+;
+webmerge.includeJS('/lib/sprintf-0.7-beta1.js?5E9AB2F7C788');
+;
 webmerge.includeJS('/src/App.js?3F9199EEB5C2');
 
-/* crc: 2CC85B940D3855AE7D7895E1888C839E */
+/* crc: A0513789E7067AB40F7F55C8A9463061 */

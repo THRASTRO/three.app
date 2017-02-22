@@ -27,6 +27,12 @@
 		<input path="src/Mixins/Options.js" />
 		<input path="src/Mixins/Events.js" />
 		<input path="src/Mixins/Plugin.js" />
+		<input path="src/Mixins/Resources.js" />
+		<input path="lib/loaders/ArrayLoader.js" />
+		<input path="lib/loaders/BlobLoader.js" />
+		<input path="lib/loaders/DataLoader.js" />
+		<input path="lib/loaders/JsonLoader.js" />
+		<input path="lib/loaders/TextLoader.js" />
 		<input path="src/Base/Object3D.js" />
 		<input path="src/Base/Scene.js" />
 		<input path="src/Plugins/Clock.js" />
@@ -35,6 +41,9 @@
 		<input path="src/Plugins/WebGLRenderer.js" />
 		<input path="src/Plugins/PerspectiveCamera.js" />
 		<input path="src/Plugins/TrackballControls.js" />
+		<input path="src/Plugins/Loader.js" />
+		<input path="src/Plugins/Progress.js" />
+		<input path="lib/sprintf-0.7-beta1.js" />
 		<input path="src/App.js" />
 	</js>
 

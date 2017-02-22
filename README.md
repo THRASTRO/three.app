@@ -74,3 +74,56 @@ app.scene.add(light);
 // set camera position
 app.camera.position.x = 10;
 ```
+
+```js
+var Sphere = THREEAPP.Class.create('Sphere', THREE.Mesh, ['Resources'])
+
+// default options
+.defaults({
+	color: 0xFF0000,
+	texture: 'land_shallow_topo_2048.jpg'
+})
+
+// called on object construction
+.ctor(function (app) {
+		// fetch resources
+		this.prefetch({
+			'texture': ['T', this.options.texture],
+		})
+})
+
+// called when texture is loaded
+.ready(function () {
+
+	// create a sphere geometry with radius 4
+	var geometry = new THREE.IcosahedronGeometry(4, 6);
+	// create a lambert material with red color (needs light!)
+	var material = new THREE.MeshLambertMaterial({
+		map: this.asset('texture'),
+		color: this.options.color
+	});
+	// call base mesh constructor function
+	THREE.Mesh.call(this, geometry, material);
+	// add ourself to parent if given by options
+	if (this.options.parent) this.options.parent.add(this);
+
+});
+
+// create main ThreeApp instance
+var app = new THREEAPP.App(vp, [
+	// omitted base plugins
+	THREEAPP.Plugin.Loader,
+	THREEAPP.Plugin.Progress,
+]);
+
+// instantiate our custom sphere
+var sphere = new Sphere(app, {
+	parent: app.scene,
+	color: 0x99CCFF
+});
+```
+
+# Demos
+
+- http://ocbnet.ch/three.app/demo/index.html
+- http://ocbnet.ch/three.app/demo/assets.html

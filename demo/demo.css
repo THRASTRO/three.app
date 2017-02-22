@@ -2,4 +2,9 @@ BODY, HTML {
 	margin: 0;
 	padding: 0;
 	overflow: hidden;
+	font-family: tahoma, arial, sans-serif;
+}
+
+#progressbar {
+	color: white;
 }
