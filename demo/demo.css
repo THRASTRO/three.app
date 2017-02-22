@@ -8,3 +8,8 @@ BODY, HTML {
 #progressbar {
 	color: white;
 }
+
+#statsGPU {
+	position: absolute;
+	bottom: 0; right: 0;
+}

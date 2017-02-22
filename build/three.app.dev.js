@@ -73,8 +73,12 @@ webmerge.includeJS('/src/Plugins/Loader.js?82228777C0B1');
 ;
 webmerge.includeJS('/src/Plugins/Progress.js?411BFFFD0FDE');
 ;
+webmerge.includeJS('/lib/extras/StatsGPU.js?2D125F01B8AE');
+;
+webmerge.includeJS('/src/Plugins/MonitorGPU.js?C121EBBDA4D6');
+;
 webmerge.includeJS('/lib/sprintf-0.7-beta1.js?5E9AB2F7C788');
 ;
 webmerge.includeJS('/src/App.js?3F9199EEB5C2');
 
-/* crc: A0513789E7067AB40F7F55C8A9463061 */
+/* crc: 1C09698FEE91D10D054605F0390FF7DC */

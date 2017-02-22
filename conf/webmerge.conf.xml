@@ -43,6 +43,8 @@
 		<input path="src/Plugins/TrackballControls.js" />
 		<input path="src/Plugins/Loader.js" />
 		<input path="src/Plugins/Progress.js" />
+		<input path="lib/extras/StatsGPU.js" />
+		<input path="src/Plugins/MonitorGPU.js" />
 		<input path="lib/sprintf-0.7-beta1.js" />
 		<input path="src/App.js" />
 	</js>

@@ -49,6 +49,8 @@ var app = new THREEAPP.App(vp, {
 		// asset loading and status
 		THREEAPP.Plugin.Loader,
 		THREEAPP.Plugin.Progress,
+		// add statitics monitor
+		THREEAPP.Plugin.MonitorGPU,
 	],
 	// autostart
 	start: true
