@@ -1,0 +1,4 @@
+/*
+ThreeApp Framework (https://github.com/mgreter/three.app)
+- Copyright (c) 2017 Marcel Greter (http://github.com/mgreter)
+*/

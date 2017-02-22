@@ -1,0 +1,52 @@
+<xml>
+	<!-- include default configuration file (relative to this file) -->
+	<include src="{EXT}/conf/common.conf.xml" />
+
+	<config>
+		<!-- where is your htdocs root directory -->
+		<!-- this is needed to create absolute urls -->
+		<!-- default is relative to the config file -->
+		<webroot>{CONF}/..</webroot>
+		<directory>{WWW}</directory>
+		<webport>8091</webport>
+		<!-- disable checksums -->
+		<crc-check>0</crc-check>
+		<crc-file>0</crc-file>
+	</config>
+
+	<!-- prepare operations -->
+	<prepare step="prepare" disabled="false" >
+		<!-- create neccessary paths -->
+		<mkdir path="build" />
+	</prepare>
+
+	<!-- group source files -->
+	<js id="three.app" >
+		<input path="src/Base.js" />
+		<input path="src/Base/Class.js" />
+		<input path="src/Mixins/Options.js" />
+		<input path="src/Mixins/Events.js" />
+		<input path="src/Mixins/Plugin.js" />
+		<input path="src/Base/Object3D.js" />
+		<input path="src/Base/Scene.js" />
+		<input path="src/Plugins/Clock.js" />
+		<input path="src/Plugins/Scene.js" />
+		<input path="src/Plugins/AutoSize.js" />
+		<input path="src/Plugins/WebGLRenderer.js" />
+		<input path="src/Plugins/PerspectiveCamera.js" />
+		<input path="src/Plugins/TrackballControls.js" />
+		<input path="src/App.js" />
+	</js>
+
+	<!-- main merge operations -->
+	<js>
+		<input id="three.app" />
+		<!-- prefix copyright header to minimized version -->
+		<prefix path="conf/license.header.txt" target="compile" />
+		<!-- generate different output versions -->
+		<output path="build/three.app.src.js" target="join" />
+		<output path="build/three.app.dev.js" target="dev" />
+		<output path="build/three.app.min.js" target="compile" />
+	</js>
+
+</xml>
