@@ -319,9 +319,10 @@
 
 		// register event listeners
 		// listeners is part of events!?
-		klass.listen = function (name, fn) {
+		klass.listen = function (name, fn, prio) {
 			var listeners = klass.prototype.listeners;
 			if (!listeners[name]) listeners[name] = [];
+			if (prio != null) fn.prio = prio;
 			listeners[name].push(fn);
 			// dispatch late registered ready events
 			if (name == "ready" && this.isReady) {
@@ -410,13 +411,14 @@
 		function reject (err) {
 			throw err;
 		}
-		// developer assertion
-		if (!promise) debugger;
-		// register class observers
+		// developer assertion (forgot to load deps?)
+		if (!promise) throw Error('Invalid wait call');
+
+		// register class observers via listen
 		if (typeof promise.listen == "function") {
 			promise.listen('ready', resolve);
 		}
-		// register promise observers
+		// register generic promise observers
 		else if (typeof promise.then == "function") {
 			promise.then(resolve, reject);
 		}
@@ -496,9 +498,12 @@
 	})
 
 	// register listener for an event
-	.method('listen', function listen(name, fn) {
+	.method('listen', function listen(name, fn, prio) {
 		// invoke late registered ready event handler
 		if (name == "ready" && this.isReady) fn.call(this);
+		// set handler priority if passed
+		// use when passing anonymous functions
+		if (prio != null) fn.prio = prio;
 		// make sure event already has an array
 		if (!this.listeners.hasOwnProperty(name))
 			this.listeners[name] = [];
@@ -1007,6 +1012,95 @@ THREE.TextLoader.prototype = {
 
 	// assign class to global namespace
 	THREEAPP('Scene', Scene);
+
+})();
+;
+/*
+	Add license text here
+	Copyright 2016 Marcel Greter
+	https://www.github.com/mgreter
+*/
+
+// private scope
+(function ()
+{
+	"use strict";
+
+	// create new virtual class (inherit THREE.Object3D)
+	var LOD = OCBNET.Class.virtual(OCBNET.Object3D, [OCBNET.Events])
+
+	// constructor
+	.ctor(function(app, options) {
+		this.lod = [];
+	})
+
+	.ready(function (app) {
+
+		app.lods.push(this);
+
+		this.trigger('lod');
+		
+	})
+
+	// invoked by global watcher
+	.listen('lod', function() {
+		var self = this;
+		// is there anything to do?
+		if (this.current != this.level) {
+			if (this.level == -1) {
+			}
+			// create levels on demand
+			// show level when loaded
+			else {
+				// instance not yet created?
+				if (!this.lod[this.level]) {
+					// get lod options for wanted level
+					var opts = this.options.lod[this.level];
+					var resources = {}; // fill from template
+					for (var key in this.options.resources) {
+						var r = this.options.resources[key];
+						resources[key] = [r[0], OCBNET.tmpl(r[1], opts)];
+					}
+					// mix options for current level of detail
+					opts = OCBNET.extend({}, this.options, opts, {
+						resources: resources, container: this,
+						// listeners: { ready: [function () { self.trigger('lod'); }] }
+					});
+
+					// invoke constructor for actual object
+					this.lod[this.level] = new this.options.ctor(this.app, opts);
+
+	//				debugger;
+				}
+					// check if instance is ready yet
+				if (this.lod[this.level].isReady) {
+					// check if previous object exists
+					if (this.lod[this.current]) {
+						// debugger;
+						// remove previousely added object
+						this.remove(this.lod[this.current]);
+					}
+					// add ready object for lod
+					this.add(this.lod[this.level]);
+					/*
+					this.lod[this.level].position.x = 0;
+					this.lod[this.level].position.y = 0;
+					this.lod[this.level].position.z = 0;
+					*/
+					// update current state
+					this.current = this.level;
+				}
+			}
+		}
+		// debugger;
+	});
+	
+	// end
+	;
+
+
+	// assign class to global namespace
+	OCBNET('LOD', LOD);
 
 })();
 ;
@@ -1529,6 +1623,302 @@ THREE.TextLoader.prototype = {
 
 // EO private scope
 })(jQuery, THREE, THREEAPP);
+;
+/*
+	Copyright 2017 Marcel Greter
+	https://www.github.com/mgreter
+*/
+
+// private scope
+(function (THREE, THREEAPP)
+{
+	"use strict";
+
+	// helper function to get a shared uniform
+	// the uniform will be created on demand!
+	function uniform(name, type, def)
+	{
+		// default type is float
+		if (!type) type = 'f';
+		// create uniform on demand
+		if (!this.uniforms[name]) {
+			this.uniforms[name] = {
+				type: type,
+				value: def || 0
+			}
+		}
+		// return the shared uniform
+		return this.uniforms[name];
+	}
+
+	var Uniforms = THREEAPP.Class.create('Uniforms', null, ['Plugin'])
+
+	.ctor(function (app)
+	{
+		// store uniforms
+		app.uniforms = [];
+		// add uniform method
+		app.uniform = uniform;
+	})
+
+	.ready(function (app)
+	{
+		if (app.hasOwnProperty("time")) {
+			app.listen('preframe', function () {
+				// update the shared time uniform
+				app.uniform('time').value = app.time;
+			}, 999999) // run very very early
+		}
+	})
+
+	;
+
+	// assign class to global namespace
+	THREEAPP('Plugin.Uniforms', Uniforms);
+
+// EO private scope
+})(THREE, THREEAPP);
+;
+/*
+	Copyright 2017 Marcel Greter
+	https://www.github.com/mgreter
+*/
+
+// private scope
+(function (THREE, THREEAPP)
+{
+	"use strict";
+
+	var Background = THREEAPP.Class.create('Background', null, ['Plugin'])
+
+	.proto('requires', 'renderer')
+	.proto('provides', 'background')
+
+	.ctor(function (app)
+	{
+		// init background scene
+		app.bg = app.options.bg ?
+		         new app.options.bg(app)
+		         : new THREE.Scene(app);
+
+		// listen to render events
+		app.listen('render', function bg() {
+			app.invoke('render-background');
+			app.renderer.render( app.bg, app.camera );
+		}, + 99) // run early (before scene)
+
+	})
+
+	;
+
+	// assign class to global namespace
+	THREEAPP('Plugin.Background', Background);
+
+// EO private scope
+})(THREE, THREEAPP);
+;
+/*
+	Copyright 2017 Marcel Greter
+	https://www.github.com/mgreter
+*/
+
+// private scope
+(function (THREE, THREEAPP)
+{
+	"use strict";
+
+	var Tween = THREEAPP.Class.create('Tween', null, ['Plugin'])
+
+	.proto('provides', 'tween')
+
+	.ready(function (app)
+	{
+		app.listen('preframe', function ()
+		{
+			TWEEN.update();
+		})
+	})
+
+	// assign class to global namespace
+	THREEAPP('Plugin.Tween', Tween);
+
+// EO private scope
+})(THREE, THREEAPP);
+
+;
+/*
+	Copyright 2017 Marcel Greter
+	https://www.github.com/mgreter
+	https://github.com/mgreter/js-lzma
+	https://github.com/jcmellado/js-lzma
+*/
+
+// private scope
+(function (THREE, THREEAPP)
+{
+	"use strict";
+
+	var LZMA = THREEAPP.Class.create('LZMA', null, ['Plugin'])
+
+	.proto('provides', 'lzma')
+
+	.ctor(function (app) {
+		// simply create one manager
+		// hardcoded to two workers ATM
+		app.wlzma = new WLZMA.Manager(2);
+	})
+
+	;
+
+	// assign class to global namespace
+	THREEAPP('Plugin.LZMA', LZMA);
+
+// EO private scope
+})(THREE, THREEAPP);
+;
+/*
+	Copyright 2017 Marcel Greter
+	https://www.github.com/mgreter
+*/
+
+// private scope
+(function (THREE, THREEAPP)
+{
+	"use strict";
+
+	var LOD = THREEAPP.Class.create('LOD', THREEAPP.Object3D, ['Plugin'])
+
+	.proto('provides', 'lod')
+	.proto('requires', 'camera')
+	.proto('requires', 'ui')
+
+	.ctor(function (app)
+	{
+		// create array
+		app.lods = [];
+	})
+
+	.ready(function (app) {
+
+		// render ui is invoked debounced
+		// no need to do this every frame!
+		app.listen('update-ui', function () {
+
+			var inv_mat = new THREE.Matrix4();
+			inv_mat.multiplyMatrices(
+				app.camera.projectionMatrix,
+				app.camera.matrixWorldInverse
+			);
+			var frustum = new THREE.Frustum();
+			frustum.setFromMatrix(inv_mat);
+			var cam_pos = app.camera.getWorldPosition();
+
+			var html = "", info = document.getElementById("lodInfo");
+			for (var i = 0, L = app.lods.length; i < L; i++) {
+				var pos = app.lods[i].getWorldPosition();
+				var dist = cam_pos.distanceToSquared(pos);
+				app.lods[i].inFrustum = frustum.intersectsSphere({
+					center: pos, radius: app.lods[i].radius || 100
+				});
+				html += sprintf("%02d) %.5f", i, dist);
+				if (!app.lods[i].inFrustum) {
+					html += " - hidden<br>";
+					continue;
+				}
+				// adjust dist by fov
+				dist *= Math.pow(app.camera.fov, 2);
+				var opts = app.lods[i].options.lod
+				var lvl = 0, lvls = opts.length;
+				// main loop to look for the correct break point
+				if (lvl < lvls && !opts[lvl]) debugger;
+				while (lvl < lvls && dist < opts[lvl].min) ++ lvl;
+				if (lvl == lvls) lvl = -1;
+				if (app.lods[i].level != lvl) {
+					app.lods[i].level = lvl;
+					app.lods[i].trigger('lod');
+				}
+				html += " - lvl " + lvl + "<br>";
+			}
+			if (info) info.innerHTML = html;
+		})
+	})
+
+	// end of class
+	;
+
+	// assign class to global namespace
+	THREEAPP('Plugin.LOD', LOD);
+
+// EO private scope
+})(THREE, THREEAPP);;
+/*
+	Copyright 2017 Marcel Greter
+	https://www.github.com/mgreter
+*/
+
+// private scope
+(function (THREE, THREEAPP)
+{
+	"use strict";
+
+	var UI = THREEAPP.Class.create('UI', null, ['Plugin'])
+
+	.proto('provides', 'ui')
+
+	.ctor(function (app)
+	{
+		var ui = this;
+		// triggers on first check
+		ui.frames = 9999;
+		// render to interface on post-event
+		app.listen('postframe', function () {
+			// increment frame count
+			if (++ ui.frames > 6) {
+				// reset counter
+				ui.frames = 0;
+				// trigger deferred
+				app.trigger('update-ui');
+			}
+		})
+	})
+
+	;
+
+	// assign class to global namespace
+	THREEAPP('Plugin.UI', UI);
+
+// EO private scope
+})(THREE, THREEAPP);
+;
+/*
+	Copyright 2017 Marcel Greter
+	https://www.github.com/mgreter
+*/
+
+// private scope
+(function (THREE, THREEAPP)
+{
+	"use strict";
+
+	var DATUI = THREEAPP.Class.create('DATUI', null, ['Plugin'])
+
+	.proto('provides', 'datui')
+
+	.ctor(function (app) {
+		app.datui = new dat.GUI();
+	})
+
+	.init(function (app) {
+		app.datui.close();
+	})
+
+	;
+
+	// assign class to global namespace
+	THREEAPP('Plugin.DATUI', DATUI);
+
+// EO private scope
+})(THREE, THREEAPP);
 ;
 /**
  * @author mrdoob / http://mrdoob.com/
@@ -2089,7 +2479,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 		var app = this;
 		// query extended options
 		var options = this.options;
-
 		// instantiate all 3rd party plugins
 		// create plan to resolve all plugins
 		var plugins = this.options.plugins || [];
@@ -2118,6 +2507,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 			}
 			// call plugin constructor
 			plugins[i] = new plugin(this);
+			// ToDo: check why wait is gone?
+			// still seems to work correctly
+			if (!app.wait) continue;
+			// wait for plugin
+			app.wait(plugins[i]);
 		}
 
 		// this should be empty now
@@ -2150,6 +2544,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 		}
 	})
 
+	// start the rendering loop
 	.method('start', function start()
 	{
 		// scope for closures
@@ -2165,8 +2560,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 		// set started flag
 		app.started = true;
 	})
+	// EO method start
 
-	// resized the renderer viewport
+	// resize the app dimensions
 	.method('resize', function resize(width, height) {
 		// local var access
 		var app = this;
@@ -2175,6 +2571,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 		app.height = height;
 		// invoke resized event
 		app.invoke('resized');
+	})
+	// EO method resize
+
+	// implement some logger methods
+	// pass through sprintf to console
+	.method('log', function log() {
+		console.log(sprintf.apply(this, arguments));
+	})
+	.method('warn', function warn() {
+		console.warn(sprintf.apply(this, arguments));
+	})
+	.method('info', function info() {
+		console.info(sprintf.apply(this, arguments));
 	})
 
 	.method('render', function render() {
@@ -2204,4 +2613,4 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // EO private scope
 })(self, THREE, THREEAPP);
 
-/* crc: 1C09698FEE91D10D054605F0390FF7DC */
+/* crc: AC2BDD79955CA7793F48C6EA29C18E49 */

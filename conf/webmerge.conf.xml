@@ -22,19 +22,25 @@
 
 	<!-- group source files -->
 	<js id="three.app" >
+		<!-- base classes -->
 		<input path="src/Base.js" />
 		<input path="src/Base/Class.js" />
+		<!-- the core mixins -->
 		<input path="src/Mixins/Options.js" />
 		<input path="src/Mixins/Events.js" />
 		<input path="src/Mixins/Plugin.js" />
 		<input path="src/Mixins/Resources.js" />
+		<!-- loaders for resources -->
 		<input path="lib/loaders/ArrayLoader.js" />
 		<input path="lib/loaders/BlobLoader.js" />
 		<input path="lib/loaders/DataLoader.js" />
 		<input path="lib/loaders/JsonLoader.js" />
 		<input path="lib/loaders/TextLoader.js" />
+		<!-- more base classes -->
 		<input path="src/Base/Object3D.js" />
 		<input path="src/Base/Scene.js" />
+		<input path="src/Base/LOD.js" />
+		<!-- some core plugins -->
 		<input path="src/Plugins/Clock.js" />
 		<input path="src/Plugins/Scene.js" />
 		<input path="src/Plugins/AutoSize.js" />
@@ -43,8 +49,18 @@
 		<input path="src/Plugins/TrackballControls.js" />
 		<input path="src/Plugins/Loader.js" />
 		<input path="src/Plugins/Progress.js" />
+		<input path="src/Plugins/Uniforms.js" />
+		<!-- more experimental plugins -->
+		<input path="src/Plugins/Background.js" />
+		<input path="src/Plugins/Tween.js" />
+		<input path="src/Plugins/LZMA.js" />
+		<input path="src/Plugins/LOD.js" />
+		<input path="src/Plugins/UI.js" />
+		<!-- developer plugins -->
+		<input path="src/Plugins/DATUI.js" />
 		<input path="lib/extras/StatsGPU.js" />
 		<input path="src/Plugins/MonitorGPU.js" />
+		<!-- main application -->
 		<input path="lib/sprintf-0.7-beta1.js" />
 		<input path="src/App.js" />
 	</js>

@@ -18,6 +18,14 @@ certainly tailored for my use-case in certain parts.
 - Plugins start in right order automatically
 - Class system with "managed" life-cycles
 
+# Attention - Danger
+
+This is really just a preview and I expect to change the API quite substantially.
+The basic principles will probably not be changed, as they have proven to work
+very will if used correctly. But there are some edges that are not fully satisfying
+yet (i.e. how `proto` is needed to define plugin dependencies). Other things are
+simply not fully thought through yet. Let's see how it evolves from here.
+
 # ToDo
 
 - Needs more documentation
