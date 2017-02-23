@@ -56,6 +56,9 @@
 		<input path="src/Plugins/LZMA.js" />
 		<input path="src/Plugins/LOD.js" />
 		<input path="src/Plugins/UI.js" />
+		<!-- real world sample base class -->
+		<input path="src/Mixins/Group.js" />
+		<input path="src/Base/Grouped.js" />
 		<!-- developer plugins -->
 		<input path="src/Plugins/DATUI.js" />
 		<input path="lib/extras/StatsGPU.js" />

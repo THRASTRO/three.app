@@ -57,7 +57,7 @@ webmerge.includeJS('/src/Base/Object3D.js?936DFA802CC2');
 ;
 webmerge.includeJS('/src/Base/Scene.js?EF60849AA383');
 ;
-webmerge.includeJS('/src/Base/LOD.js?03F2A8247388');
+webmerge.includeJS('/src/Base/LOD.js?CE6576E1D480');
 ;
 webmerge.includeJS('/src/Plugins/Clock.js?793393A474E9');
 ;
@@ -87,6 +87,10 @@ webmerge.includeJS('/src/Plugins/LOD.js?E4B497095D16');
 ;
 webmerge.includeJS('/src/Plugins/UI.js?9D9231B7EE26');
 ;
+webmerge.includeJS('/src/Mixins/Group.js?9922084E75F2');
+;
+webmerge.includeJS('/src/Base/Grouped.js?F793EA9D22AF');
+;
 webmerge.includeJS('/src/Plugins/DATUI.js?0897A97773CA');
 ;
 webmerge.includeJS('/lib/extras/StatsGPU.js?2D125F01B8AE');
@@ -97,4 +101,4 @@ webmerge.includeJS('/lib/sprintf-0.7-beta1.js?5E9AB2F7C788');
 ;
 webmerge.includeJS('/src/App.js?1FAA93159837');
 
-/* crc: AC2BDD79955CA7793F48C6EA29C18E49 */
+/* crc: 299C5EFFD3712EB8BCF0752877931905 */

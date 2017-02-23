@@ -1022,12 +1022,12 @@ THREE.TextLoader.prototype = {
 */
 
 // private scope
-(function ()
+(function (THREE, THREEAPP)
 {
 	"use strict";
 
 	// create new virtual class (inherit THREE.Object3D)
-	var LOD = OCBNET.Class.virtual(OCBNET.Object3D, [OCBNET.Events])
+	var LOD = THREEAPP.Class.virtual(THREEAPP.Object3D, ['Events'])
 
 	// constructor
 	.ctor(function(app, options) {
@@ -1059,10 +1059,10 @@ THREE.TextLoader.prototype = {
 					var resources = {}; // fill from template
 					for (var key in this.options.resources) {
 						var r = this.options.resources[key];
-						resources[key] = [r[0], OCBNET.tmpl(r[1], opts)];
+						resources[key] = [r[0], THREEAPP.tmpl(r[1], opts)];
 					}
 					// mix options for current level of detail
-					opts = OCBNET.extend({}, this.options, opts, {
+					opts = THREEAPP.extend({}, this.options, opts, {
 						resources: resources, container: this,
 						// listeners: { ready: [function () { self.trigger('lod'); }] }
 					});
@@ -1100,9 +1100,9 @@ THREE.TextLoader.prototype = {
 
 
 	// assign class to global namespace
-	OCBNET('LOD', LOD);
+	THREEAPP('LOD', LOD);
 
-})();
+})(THREE, THREEAPP);
 ;
 /*
 	Copyright 2017 Marcel Greter
@@ -1900,6 +1900,282 @@ THREE.TextLoader.prototype = {
 {
 	"use strict";
 
+	// create a new (augmented) mixin
+	var Group = THREEAPP.Class.mixin(['Events', 'Options'])
+
+	// constructor
+	.ctor(function(app, options) {
+		// start empty
+		this.items = [];
+		this.length = 0;
+	})
+
+	// default settings
+	.defaults({
+		softLimit: 8,
+		hardLimit: 2000,
+		increment: 2,
+	})
+
+	.method('belowSoftLimit', function (obj) {
+		return this.items.length < this.options.softLimit;
+	})
+	.method('belowHardLimit', function (obj) {
+		return this.items.length < this.options.hardLimit;
+	})
+
+	// you may want to overload this
+	// ToDo: maybe add hooks instead
+	.method('delete', function (obj) {
+		// convert object to index
+		if (isNaN(obj)) { obj = this.items.indexOf(obj); }
+		if (obj < 0 || obj > this.items.length) {
+			throw "cannot remove unknown group item"
+		}
+		// keep reference for now
+		var item = this.items[obj];
+		// splice the item away
+		this.items.splice(obj, 1);
+		// decrease size
+		this.length -= 1;
+		// trigger deferred
+		this.trigger('decrease');
+		// trigger single event
+		this.invoke('deleted', item);
+		// trigger generic hock
+		this.trigger('resized');
+	})
+
+	// you may want to overload this
+	// ToDo: maybe add hooks instead
+	.method('insert', function (obj) {
+
+		// maybe space is available
+		if (this.belowSoftLimit()) {
+			// add object to items
+			this.items.push(obj);
+			// increment size
+			this.length += 1;
+			// trigger deferred
+			this.trigger('increase');
+		}
+		else if (this.belowHardLimit()) {
+			// add object to items
+			this.items.push(obj);
+			// adjust the softlimit by increasing until hard limit
+			this.options.softLimit *= this.options.increment || 2;
+			if (this.options.softLimit > this.options.hardLimit) {
+				this.options.softLimit = this.options.hardLimit;
+			}
+			// increment size
+			this.length += 1;
+			// call synchronous
+			// mark buffer stale
+			this.invoke('resize');
+		}
+		// or we reached a hard limit
+		else {
+			// check hard limit before calling add ...
+			throw Error("group reached hard limit");
+		}
+		// trigger single event
+		this.invoke('inserted', obj);
+		// trigger generic hock
+		this.trigger('resized');
+	})
+
+	// end
+	;
+
+	// assign global namespace
+	THREEAPP('Group', Group)
+
+})(THREE, THREEAPP);
+;
+/*
+	Copyright 2017 Marcel Greter
+	https://www.github.com/mgreter
+*/
+
+// private scope
+(function (THREE, THREEAPP)
+{
+	"use strict";
+
+	// create a new (augmented) mixin
+	var Grouped = THREEAPP.Class.create('Grouped', null, ['Events', 'Options'])
+
+	// constructor
+	.ctor(function(app, options) {
+		// start empty
+		this.length = 0;
+		this.groups = [];
+		this.current = null;
+		this.compacting = false;
+	})
+
+	// default settings
+	.defaults({
+		softLimit: 3,
+		hardLimit: 2000,
+		increment: 8,
+		compact: 0.75
+	})
+
+	// add object to a free group
+	.method('add', function (obj) {
+		var self = this;
+		// increase count
+		self.length += 1;
+		// check active group
+		if (self.current) {
+			// append to active group until full
+			if (self.current.belowHardLimit()) {
+				self.current.insert(obj);
+				return self;
+			}
+			// check if any other group has space now
+			for (var i = 0; i < self.groups.length; i++) {
+				if (self.groups[i].belowHardLimit()) {
+					self.current = self.groups[i];
+					self.current.insert(obj);
+					return self;
+				}
+			}
+		}
+		// or create a new group instance
+		self.current = new self.options.ctor(
+			self.app, self.options // re-use opts
+		);
+		// store new group on ourself
+		self.groups.push(self.current);
+		// add object to the group
+		self.current.insert(obj);
+		// Decouple tasker from group
+		self.current.trigger('enable');
+		// chainable
+		return self;
+	})
+
+	// you may want to overload this
+	// ToDo: maybe add hooks instead
+	.method('delete', function (obj) {
+		// search in groups
+		// index is fastest
+		var n = 0, idx = -1;
+		if (isNaN(obj)) {
+			// find group containing given object
+			for (var n = 0; n < this.groups.length; n ++) {
+				if ((idx = this.groups[n].indexOf(obj)) > -1) break;
+			}
+			// use index
+			obj = idx;
+		}
+		// resolve index
+		else {
+			// print warning on console
+			if (obj < 0 || obj >= this.length) {
+				console.warn('access out of bound');
+			}
+			// find group and local offset
+			while (n < this.groups.length) {
+				if (obj < this.groups[n].length) break;
+				obj -= this.groups[n].length; n += 1;
+			}
+		}
+		// do nothing if index is out of bound
+		if (n == this.groups.length) return
+		// delegate to group
+		this.groups[n].delete(obj);
+		// check if group is empty now
+		if (this.groups[n].length == 0) {
+			// mark the group as been removed
+			this.groups[n].removed = true;
+			// Decouple tasker from group
+			this.groups[n].trigger('disable');
+			// remove group completely
+			this.groups.splice(n, 1);
+		}
+		// decrease counter
+		this.length -= 1;
+
+		// abort if already running
+		if (this.compacting) return;
+		// auto compact multiple groups if not yet started
+		if (this.options.compact && this.groups.length > 2) {
+			// calculate ratio of average items per groups
+			var ratio = this.length / this.options.hardLimit;
+			var minima = this.groups.length * this.options.compact;
+			// start compact if average is below a certain ratio
+			if (ratio < minima) this.compact(75);
+		}
+	})
+
+	// merge groups to reduce needed groups
+	.method('compact', function (speed, n) {
+		// timeout closure
+		var self = this;
+		// offset is optional
+		if (isNaN(n)) n = 0;
+		// flag to run only once
+		this.compacting = true;
+		// process all groups
+		while (n < this.groups.length) {
+			// look for a group to fill up
+			if (this.groups[n].belowHardLimit()) {
+				// move items until group is full
+				while (this.groups[n].belowHardLimit()) {
+					var L = this.groups.length - 1;
+					var idx = this.groups[L].length - 1;
+					var item = this.groups[L].items[idx];
+					if (idx == -1 || L == n) break;
+					// swap object group
+					this.groups[L].delete(idx);
+					this.groups[n].insert(item);
+					// check if old group now empty
+					if (this.groups[L].length == 0) {
+						// mark the group as been removed
+						this.groups[L].removed = true;
+						// Decouple tasker from group
+						this.groups[L].trigger('disable');
+						// remove group completely
+						this.groups.splice(L, 1);
+					}
+				}
+				// schedule next group
+				if (!isNaN(speed)) {
+					setTimeout(function () {
+						self.compact(speed, n);
+					}, speed);
+				}
+				// abort for now
+				break;
+			}
+			// skip full group
+			n += 1;
+		}
+		// we are done for now
+		this.compacting = false;
+	})
+
+	// end
+	;
+
+	// assign global namespace
+	THREEAPP('Grouped', Grouped)
+
+})(THREE, THREEAPP);
+;
+/*
+	Copyright 2017 Marcel Greter
+	https://www.github.com/mgreter
+*/
+
+// private scope
+(function (THREE, THREEAPP)
+{
+	"use strict";
+
 	var DATUI = THREEAPP.Class.create('DATUI', null, ['Plugin'])
 
 	.proto('provides', 'datui')
@@ -2613,4 +2889,4 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // EO private scope
 })(self, THREE, THREEAPP);
 
-/* crc: AC2BDD79955CA7793F48C6EA29C18E49 */
+/* crc: 299C5EFFD3712EB8BCF0752877931905 */

@@ -5,12 +5,12 @@
 */
 
 // private scope
-(function ()
+(function (THREE, THREEAPP)
 {
 	"use strict";
 
 	// create new virtual class (inherit THREE.Object3D)
-	var LOD = OCBNET.Class.virtual(OCBNET.Object3D, [OCBNET.Events])
+	var LOD = THREEAPP.Class.virtual(THREEAPP.Object3D, ['Events'])
 
 	// constructor
 	.ctor(function(app, options) {
@@ -42,10 +42,10 @@
 					var resources = {}; // fill from template
 					for (var key in this.options.resources) {
 						var r = this.options.resources[key];
-						resources[key] = [r[0], OCBNET.tmpl(r[1], opts)];
+						resources[key] = [r[0], THREEAPP.tmpl(r[1], opts)];
 					}
 					// mix options for current level of detail
-					opts = OCBNET.extend({}, this.options, opts, {
+					opts = THREEAPP.extend({}, this.options, opts, {
 						resources: resources, container: this,
 						// listeners: { ready: [function () { self.trigger('lod'); }] }
 					});
@@ -83,6 +83,6 @@
 
 
 	// assign class to global namespace
-	OCBNET('LOD', LOD);
+	THREEAPP('LOD', LOD);
 
-})();
+})(THREE, THREEAPP);
