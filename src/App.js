@@ -37,7 +37,6 @@
 		var app = this;
 		// query extended options
 		var options = this.options;
-
 		// instantiate all 3rd party plugins
 		// create plan to resolve all plugins
 		var plugins = this.options.plugins || [];
@@ -66,6 +65,11 @@
 			}
 			// call plugin constructor
 			plugins[i] = new plugin(this);
+			// ToDo: check why wait is gone?
+			// still seems to work correctly
+			if (!app.wait) continue;
+			// wait for plugin
+			app.wait(plugins[i]);
 		}
 
 		// this should be empty now
@@ -98,6 +102,7 @@
 		}
 	})
 
+	// start the rendering loop
 	.method('start', function start()
 	{
 		// scope for closures
@@ -113,8 +118,9 @@
 		// set started flag
 		app.started = true;
 	})
+	// EO method start
 
-	// resized the renderer viewport
+	// resize the app dimensions
 	.method('resize', function resize(width, height) {
 		// local var access
 		var app = this;
@@ -123,6 +129,19 @@
 		app.height = height;
 		// invoke resized event
 		app.invoke('resized');
+	})
+	// EO method resize
+
+	// implement some logger methods
+	// pass through sprintf to console
+	.method('log', function log() {
+		console.log(sprintf.apply(this, arguments));
+	})
+	.method('warn', function warn() {
+		console.warn(sprintf.apply(this, arguments));
+	})
+	.method('info', function info() {
+		console.info(sprintf.apply(this, arguments));
 	})
 
 	.method('render', function render() {

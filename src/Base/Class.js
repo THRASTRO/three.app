@@ -152,9 +152,10 @@
 
 		// register event listeners
 		// listeners is part of events!?
-		klass.listen = function (name, fn) {
+		klass.listen = function (name, fn, prio) {
 			var listeners = klass.prototype.listeners;
 			if (!listeners[name]) listeners[name] = [];
+			if (prio != null) fn.prio = prio;
 			listeners[name].push(fn);
 			// dispatch late registered ready events
 			if (name == "ready" && this.isReady) {
@@ -243,13 +244,14 @@
 		function reject (err) {
 			throw err;
 		}
-		// developer assertion
-		if (!promise) debugger;
-		// register class observers
+		// developer assertion (forgot to load deps?)
+		if (!promise) throw Error('Invalid wait call');
+
+		// register class observers via listen
 		if (typeof promise.listen == "function") {
 			promise.listen('ready', resolve);
 		}
-		// register promise observers
+		// register generic promise observers
 		else if (typeof promise.then == "function") {
 			promise.then(resolve, reject);
 		}

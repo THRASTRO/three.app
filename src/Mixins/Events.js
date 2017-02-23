@@ -28,9 +28,12 @@
 	})
 
 	// register listener for an event
-	.method('listen', function listen(name, fn) {
+	.method('listen', function listen(name, fn, prio) {
 		// invoke late registered ready event handler
 		if (name == "ready" && this.isReady) fn.call(this);
+		// set handler priority if passed
+		// use when passing anonymous functions
+		if (prio != null) fn.prio = prio;
 		// make sure event already has an array
 		if (!this.listeners.hasOwnProperty(name))
 			this.listeners[name] = [];
