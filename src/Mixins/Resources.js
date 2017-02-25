@@ -68,6 +68,7 @@
 	.init(function (app) {
 
 		var self = this;
+		var manager = app.manager;
 		var assets = self.resources;
 		for (var name in assets) {
 			// type is first array item
@@ -103,15 +104,15 @@
 			}
 			// otherwise add asset to our loader queue
 			var type = type.substr(0, 1).toUpperCase(), loader;
-			if (type == 'S') loader = new THREE.TextLoader( app.manager );
-			else if (type == 'I') loader = new THREE.ImageLoader( app.manager );
-			else if (type == 'T') loader = new THREE.BlobLoader( app.manager );
-			else if (type == 'J') loader = new THREE.JsonLoader( app.manager );
-			else if (type == 'A') loader = new THREE.ArrayLoader( app.manager );
-			else if (type == 'B') loader = new THREE.BlobLoader( app.manager );
-			else if (type == 'R') loader = new THREE.BinaryLoader( app.manager );
-			else if (type == 'O') loader = new THREE.ObjectLoader( app.manager );
-			else if (type == 'L') loader = new THREE.OBJLoader( app.manager );
+			if (type == 'S') loader = new THREE.TextLoader( manager );
+			else if (type == 'T') loader = new THREE.TextureLoader( manager );
+			else if (type == 'I') loader = new THREE.ImageLoader( manager );
+			else if (type == 'J') loader = new THREE.JsonLoader( manager );
+			else if (type == 'A') loader = new THREE.ArrayLoader( manager );
+			else if (type == 'B') loader = new THREE.BlobLoader( manager );
+			else if (type == 'R') loader = new THREE.BinaryLoader( manager );
+			else if (type == 'O') loader = new THREE.ObjectLoader( manager );
+			else if (type == 'L') loader = new THREE.OBJLoader( manager );
 			else throw('Unknown loader type for resource');
 			// initialize defaults and store references
 			var asset = { obj: this, assets: assets[name] };
@@ -125,30 +126,11 @@
 				// invoke the choosen loader implementation
 				(function (type, url, resource) {
 					// no way around a closure
-					var onProgress = function (evt) {
+					loader.load( url, function loaded(data) {
+						app.invoke('loader.complete', resource, data);
+					}, function progress(evt) {
 						app.invoke('loader.progress', self, resource, evt);
-					}
-					// official texture loader creates an image tag
-					// there seems no way to get load size this way
-					// I really hope browser caching kicks in, since
-					// we first load it via ajax and then again via
-					// the official THREE.js way (creating img tag)
-					if (type == 'T') {
-						loader.load( url, function () {
-							loader = new THREE.TextureLoader( app.manager );
-							loader.load( url, function (data) {
-								if (type == 'T') { app.loader.texLoaded += 1; }
-								app.invoke('loader.complete', resource, data);
-							}, onProgress, reject);
-							app.loader.texLoading += 1;
-						}, onProgress, reject);
-					}
-					// all other loader report size
-					else {
-						loader.load( url, function (data) {
-							app.invoke('loader.complete', resource, data);
-						}, onProgress, reject);
-					}
+					}, reject);
 				})(type, url, app.resources[url]);
 			}));
 		}

@@ -50,8 +50,8 @@
 
 	function loadStep(args) {
 		var loader = this.loader;
-		loader.filesTotal = args[2] - loader.texLoading;
-		loader.filesLoaded = args[1] - loader.texLoaded;
+		loader.filesTotal = args[2];
+		loader.filesLoaded = args[1];
 		this.trigger(
 			'fetch.progress', {
 				filesTotal: loader.filesTotal,
@@ -68,14 +68,15 @@
 		var loader = this.loader;
 		// add total file size once
 		if (asset.total == 0) {
+			asset.total = evt.total;
 			loader.bytesTotal += evt.total;
+			loader.filesTotal += 1;
 		}
 		// increment loaded stats by delta of asset
 		loader.bytesLoaded += evt.loaded - asset.loaded;
 
 		// update singleton values
 		asset.loaded = evt.loaded;
-		asset.total = evt.total;
 
 		// trigger the download progress
 		// ToDo: throttle for better fps?
@@ -105,8 +106,6 @@
 		loader.filesLoaded = 0;
 		loader.bytesTotal = 0;
 		loader.bytesLoaded = 0;
-		loader.texLoading = 0;
-		loader.texLoaded = 0;
 		// register event handlers
 		app.listen('loader.step', loadStep);
 		app.listen('loader.start', loadStart);

@@ -3,31 +3,32 @@ var Sphere = THREEAPP.Class.create('Sphere', THREE.Mesh, ['Resources'])
 // default options
 .defaults({
 	color: 0xFF0000,
-	texture: 'land_shallow_topo_2048.jpg'
+	// texture: ...
 })
 
 // called on object construction
 .ctor(function (app) {
-		// fetch resources
-		this.prefetch({
-			'texture': ['T', this.options.texture],
-		})
+	// fetch resources
+	this.prefetch(this.options.texture ? {
+		'texture': ['T', this.options.texture],
+	} : {})
 })
 
 // called when texture is loaded
 .ready(function () {
 
+	var options = this.options;
+	var texture = options.texture;
+	var matopt = { color: options.color };
+	if (texture) matopt.map = this.asset('texture');
 	// create a sphere geometry with radius 4
 	var geometry = new THREE.IcosahedronGeometry(4, 6);
 	// create a lambert material with red color (needs light!)
-	var material = new THREE.MeshLambertMaterial({
-		map: this.asset('texture'),
-		color: this.options.color
-	});
+	var material = new THREE.MeshLambertMaterial(matopt);
 	// call base mesh constructor function
 	THREE.Mesh.call(this, geometry, material);
 	// add ourself to parent if given by options
-	if (this.options.parent) this.options.parent.add(this);
+	if (options.parent) options.parent.add(this);
 
 })
 
@@ -64,6 +65,7 @@ var scene = app.scene,
 
 // instantiate our custom sphere
 var sphere = new Sphere(app, {
+	texture: 'land_shallow_topo_2048.jpg',
 	parent: app.scene,
 	color: 0x99CCFF
 });
