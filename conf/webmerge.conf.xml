@@ -57,9 +57,20 @@
 		<input path="src/Plugins/LZMA.js" />
 		<input path="src/Plugins/LOD.js" />
 		<input path="src/Plugins/UI.js" />
+		<input path="src/CPUs/Tester.js" />
+		<input path="src/CPUs/Worker.js" />
+		<input path="src/CPUs/StatsCPU.js" />
 		<!-- real world sample base class -->
 		<input path="src/Mixins/Group.js" />
 		<input path="src/Base/Grouped.js" />
+		<!-- <input path="src/Worker.js" /> -->
+		<input path="src/Tasker.js" />
+		<input path="src/Scheduler.js" />
+		<input path="src/Base/Batch.js" />
+		<!-- more experimental plugins -->
+		<input path="src/Plugins/Tasker.js" />
+		<input path="src/Plugins/Scheduler.js" />
+		<input path="src/Plugins/MonitorCPU.js" />
 		<!-- developer plugins -->
 		<input path="src/Plugins/DATUI.js" />
 		<input path="lib/extras/StatsGPU.js" />

@@ -13,3 +13,8 @@ BODY, HTML {
 	position: absolute;
 	bottom: 0; right: 0;
 }
+
+#statsCPU {
+	position: absolute;
+	bottom: 0; right: 100px;
+}

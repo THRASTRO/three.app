@@ -89,9 +89,27 @@ webmerge.includeJS('/src/Plugins/LOD.js?E4B497095D16');
 ;
 webmerge.includeJS('/src/Plugins/UI.js?9D9231B7EE26');
 ;
+webmerge.includeJS('/src/CPUs/Tester.js?08398212E898');
+;
+webmerge.includeJS('/src/CPUs/Worker.js?551D0AAA11CF');
+;
+webmerge.includeJS('/src/CPUs/StatsCPU.js?3C8C307A2475');
+;
 webmerge.includeJS('/src/Mixins/Group.js?9922084E75F2');
 ;
 webmerge.includeJS('/src/Base/Grouped.js?F793EA9D22AF');
+;
+webmerge.includeJS('/src/Tasker.js?2E07340A1BE0');
+;
+webmerge.includeJS('/src/Scheduler.js?15D125A23B1C');
+;
+webmerge.includeJS('/src/Base/Batch.js?5005DEBED3CE');
+;
+webmerge.includeJS('/src/Plugins/Tasker.js?DE1912C7590B');
+;
+webmerge.includeJS('/src/Plugins/Scheduler.js?2EFAAC35DE01');
+;
+webmerge.includeJS('/src/Plugins/MonitorCPU.js?A807895A76E4');
 ;
 webmerge.includeJS('/src/Plugins/DATUI.js?0897A97773CA');
 ;
@@ -101,6 +119,6 @@ webmerge.includeJS('/src/Plugins/MonitorGPU.js?C121EBBDA4D6');
 ;
 webmerge.includeJS('/lib/sprintf-0.7-beta1.js?5E9AB2F7C788');
 ;
-webmerge.includeJS('/src/App.js?1FAA93159837');
+webmerge.includeJS('/src/App.js?55E0D007375F');
 
-/* crc: 0CD2C97091C298D772BB6C2EDB8149C7 */
+/* crc: 0942BAA7A187F266C8897DBEBCE9789B */

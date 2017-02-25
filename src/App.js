@@ -31,7 +31,7 @@
 
 	})
 
-	.init(function init(app) {
+	.init(function init(app, options) {
 
 		// scope for closures
 		var app = this;
@@ -63,8 +63,11 @@
 				// restart lookup
 				n = 0;
 			}
+			// get the plugin name
+			var name = plugin.name;
 			// call plugin constructor
-			plugins[i] = new plugin(this);
+			var opts = options[name];
+			plugins[i] = new plugin(this, opts);
 			// ToDo: check why wait is gone?
 			// still seems to work correctly
 			if (!app.wait) continue;

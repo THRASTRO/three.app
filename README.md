@@ -135,3 +135,4 @@ var sphere = new Sphere(app, {
 
 - http://ocbnet.ch/three.app/demo/index.html
 - http://ocbnet.ch/three.app/demo/assets.html
+- http://ocbnet.ch/three.app/demo/tasker.html
