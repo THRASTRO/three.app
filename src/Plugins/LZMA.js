@@ -16,8 +16,8 @@
 
 	.ctor(function (app) {
 		// simply create one manager
-		// hardcoded to two workers ATM
-		app.wlzma = new WLZMA.Manager(2);
+		// hardcoded to three workers ATM
+		app.wlzma = new WLZMA.Manager(3);
 	})
 
 	;

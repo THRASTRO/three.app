@@ -49,6 +49,9 @@ var Sphere = THREEAPP.Class.create('Sphere', THREE.Mesh, ['Resources'])
 	var options = this.options;
 	var texture = options.texture;
 	var matopt = { color: options.color };
+	if (options.hasOwnProperty('opacity')) {
+		matopt.opacity = options.opacity;
+	}
 	if (texture) matopt.map = this.asset('texture');
 	// create a sphere geometry with radius 4
 	var geometry = new THREE.IcosahedronGeometry(4, 6);
@@ -58,6 +61,15 @@ var Sphere = THREEAPP.Class.create('Sphere', THREE.Mesh, ['Resources'])
 	THREE.Mesh.call(this, geometry, material);
 	// add ourself to parent if given by options
 	if (options.parent) options.parent.add(this);
+
+	// optional dat ui part
+	if (app.datui) {
+		var datui = app.datui;
+		var name = options.name || "Sphere";
+		var folder = datui.addFolder(name);
+		folder.add(material, 'opacity', 0, 1)
+			.name( 'Transparency' ).step(0.01).listen();
+	}
 
 })
 
@@ -86,6 +98,7 @@ var app = new THREEAPP.App(vp, {
 		// add statitics monitor
 		THREEAPP.Plugin.MonitorGPU,
 		THREEAPP.Plugin.MonitorCPU,
+		THREEAPP.Plugin.DATUI,
 	],
 	// Tasker plugin options
 	Tasker: { root: '../src' },
@@ -120,7 +133,9 @@ var scene = app.scene,
 var sphere = new Sphere(app, {
 	texture: 'land_shallow_topo_2048.jpg',
 	parent: app.scene,
-	color: 0x99CCFF
+	color: 0x99CCFF,
+	name: 'Earth',
+	opacity: 0.8
 });
 
 // create a point light (with white light)
