@@ -136,3 +136,6 @@ var sphere = new Sphere(app, {
 - http://ocbnet.ch/three.app/demo/index.html
 - http://ocbnet.ch/three.app/demo/assets.html
 - http://ocbnet.ch/three.app/demo/tasker.html
+- http://ocbnet.ch/three.app/demo/labels.html ([FF Bug][1])
+
+[1]: https://bugzilla.mozilla.org/show_bug.cgi?id=1343705

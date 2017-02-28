@@ -2398,7 +2398,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	// uncomment if you want to test max framerate
 	// defer = function () { setTimeout(arguments[0], 0); }
 
-	var ThreeApp = THREEAPP.Class.create('ThreeApp', null, ['Events'])
+	var ThreeApp = THREEAPP.Class.create('ThreeApp', null, ['Events', 'Options'])
+
+	.defaults({
+		root: '.'
+	})
 
 	.ctor(function ctor(vp, options) {
 
@@ -2408,6 +2412,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 		app.frames = 9999;
 		// application viewport
 		app.viewport = vp;
+		// split relative root path
+		var root = this.options.root;
+		this.root = root.split(/\/+/);
 		// extend instance options
 		THREEAPP.extend(this.options, options);
 		// query extended options
@@ -2531,6 +2538,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 		console.info(sprintf.apply(this, arguments));
 	})
 
+	// resolve to correct relative path
+	.method('path', function path(path) {
+		var parts = path.split(/\/+/);
+		return this.root.concat(parts).join('/');
+	})
+
 	.method('render', function render() {
 		// local var access
 		var app = this;
@@ -2558,4 +2571,4 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // EO private scope
 })(self, THREE, THREEAPP);
 
-/* crc: 92C98BBB1550F50671122BCC8B811A2A */
+/* crc: 2777E8C399974232178DF7BD4ACC4D32 */

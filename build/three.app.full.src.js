@@ -2398,7 +2398,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	// uncomment if you want to test max framerate
 	// defer = function () { setTimeout(arguments[0], 0); }
 
-	var ThreeApp = THREEAPP.Class.create('ThreeApp', null, ['Events'])
+	var ThreeApp = THREEAPP.Class.create('ThreeApp', null, ['Events', 'Options'])
+
+	.defaults({
+		root: '.'
+	})
 
 	.ctor(function ctor(vp, options) {
 
@@ -2408,6 +2412,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 		app.frames = 9999;
 		// application viewport
 		app.viewport = vp;
+		// split relative root path
+		var root = this.options.root;
+		this.root = root.split(/\/+/);
 		// extend instance options
 		THREEAPP.extend(this.options, options);
 		// query extended options
@@ -2529,6 +2536,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	})
 	.method('info', function info() {
 		console.info(sprintf.apply(this, arguments));
+	})
+
+	// resolve to correct relative path
+	.method('path', function path(path) {
+		var parts = path.split(/\/+/);
+		return this.root.concat(parts).join('/');
 	})
 
 	.method('render', function render() {
@@ -3077,6 +3090,454 @@ onmessage = function(e)
 
 	// assign class to global namespace
 	THREEAPP('Plugin.Scheduler', Scheduler);
+
+// EO private scope
+})(THREE, THREEAPP);
+;
+// https://github.com/jakesgordon/bin-packing/blob/master/js/packer.growing.js
+/******************************************************************************
+
+This is a binary tree based bin packing algorithm that is more complex than
+the simple Packer (packer.js). Instead of starting off with a fixed width and
+height, it starts with the width and height of the first block passed and then
+grows as necessary to accomodate each subsequent block. As it grows it attempts
+to maintain a roughly square ratio by making 'smart' choices about whether to
+grow right or down.
+
+When growing, the algorithm can only grow to the right OR down. Therefore, if
+the new block is BOTH wider and taller than the current target then it will be
+rejected. This makes it very important to initialize with a sensible starting
+width and height. If you are providing sorted input (largest first) then this
+will not be an issue.
+
+A potential way to solve this limitation would be to allow growth in BOTH
+directions at once, but this requires maintaining a more complex tree
+with 3 children (down, right and center) and that complexity can be avoided
+by simply chosing a sensible starting block.
+
+Best results occur when the input blocks are sorted by height, or even better
+when sorted by max(width,height).
+
+Inputs:
+------
+
+  blocks: array of any objects that have .w and .h attributes
+
+Outputs:
+-------
+
+  marks each block that fits with a .fit attribute pointing to a
+  node with .x and .y coordinates
+
+Example:
+-------
+
+  var blocks = [
+    { w: 100, h: 100 },
+    { w: 100, h: 100 },
+    { w:  80, h:  80 },
+    { w:  80, h:  80 },
+    etc
+    etc
+  ];
+
+  var packer = new GrowingPacker();
+  packer.fit(blocks);
+
+  for(var n = 0 ; n < blocks.length ; n++) {
+    var block = blocks[n];
+    if (block.fit) {
+      Draw(block.fit.x, block.fit.y, block.w, block.h);
+    }
+  }
+
+
+******************************************************************************/
+
+GrowingPacker = function() { };
+
+GrowingPacker.prototype = {
+
+  fit: function(blocks) {
+    var n, node, block, len = blocks.length;
+    var w = len > 0 ? blocks[0].w : 0;
+    var h = len > 0 ? blocks[0].h : 0;
+    this.root = { x: 0, y: 0, w: w, h: h };
+    for (n = 0; n < len ; n++) {
+      block = blocks[n];
+      if (node = this.findNode(this.root, block.w, block.h))
+        block.fit = this.splitNode(node, block.w, block.h);
+      else
+        block.fit = this.growNode(block.w, block.h);
+    }
+  },
+
+  findNode: function(root, w, h) {
+    if (root.used)
+      return this.findNode(root.right, w, h) || this.findNode(root.down, w, h);
+    else if ((w <= root.w) && (h <= root.h))
+      return root;
+    else
+      return null;
+  },
+
+  splitNode: function(node, w, h) {
+    node.used = true;
+    node.down  = { x: node.x,     y: node.y + h, w: node.w,     h: node.h - h };
+    node.right = { x: node.x + w, y: node.y,     w: node.w - w, h: h          };
+    return node;
+  },
+
+  growNode: function(w, h) {
+    var canGrowDown  = (w <= this.root.w);
+    var canGrowRight = (h <= this.root.h);
+
+    var shouldGrowRight = canGrowRight && (this.root.h >= (this.root.w + w)); // attempt to keep square-ish by growing right when height is much greater than width
+    var shouldGrowDown  = canGrowDown  && (this.root.w >= (this.root.h + h)); // attempt to keep square-ish by growing down  when width  is much greater than height
+
+    if (shouldGrowRight)
+      return this.growRight(w, h);
+    else if (shouldGrowDown)
+      return this.growDown(w, h);
+    else if (canGrowRight)
+     return this.growRight(w, h);
+    else if (canGrowDown)
+      return this.growDown(w, h);
+    else
+      return null; // need to ensure sensible root starting size to avoid this happening
+  },
+
+  growRight: function(w, h) {
+    this.root = {
+      used: true,
+      x: 0,
+      y: 0,
+      w: this.root.w + w,
+      h: this.root.h,
+      down: this.root,
+      right: { x: this.root.w, y: 0, w: w, h: this.root.h }
+    };
+    if (node = this.findNode(this.root, w, h))
+      return this.splitNode(node, w, h);
+    else
+      return null;
+  },
+
+  growDown: function(w, h) {
+    this.root = {
+      used: true,
+      x: 0,
+      y: 0,
+      w: this.root.w,
+      h: this.root.h + h,
+      down:  { x: 0, y: this.root.h, w: this.root.w, h: h },
+      right: this.root
+    };
+    if (node = this.findNode(this.root, w, h))
+      return this.splitNode(node, w, h);
+    else
+      return null;
+  }
+
+}
+
+
+;
+/*
+	Copyright 2017 Marcel Greter
+	https://www.github.com/mgreter
+*/
+
+// private scope
+(function (THREE, THREEAPP)
+{
+	"use strict";
+
+	var margin = 2;
+
+	var packer = new GrowingPacker();
+
+	function setupDraw(label)
+	{
+		var ctx = this.context;
+		var opt = this.options;
+		ctx.font = opt.fontSize + "px "
+			+ opt.fontFamily;
+		ctx.fillStyle = label.color || opt.fillStyle;
+		ctx.strokeStyle = label.stroke || opt.strokeStyle;
+		ctx.lineWidth = label.lineWidth || opt.lineWidth;
+	}
+
+	function drawBg(label)
+	{
+		var fit = label.fit;
+		var x = fit.x + margin;
+		var y = fit.y + label.h;
+		y = y - margin - 1;
+		var ctx = this.context;
+		if (label.background) {
+			ctx.fillStyle = label.background;
+			ctx.fillRect(fit.x, fit.y, label.w, label.h);
+		}
+		if (label.border) {
+			ctx.strokeStyle = label.border;
+			ctx.rect(fit.x, fit.y, label.w, label.h);
+			ctx.stroke();
+		}
+	}
+
+	function drawText(label)
+	{
+		var fit = label.fit;
+		var x = fit.x + margin;
+		var y = fit.y + label.h;
+		y = y - margin - 2
+		var ctx = this.context;
+		var opt = this.options;
+		if (label.stroke || opt.strokeStyle) {
+			ctx.strokeText(label.txt, x, y);
+		}
+		if (label.color || opt.fillStyle) {
+			ctx.fillText(label.txt, x, y);
+		}
+	}
+
+	// return power of 2
+	function pow2(v)
+	{
+		v--;
+		v |= v >> 1;
+		v |= v >> 2;
+		v |= v >> 4;
+		v |= v >> 8;
+		v |= v >> 16;
+		v++;
+		return v;
+	}
+
+	// create a new (augmented) class
+	var Labels = THREEAPP.Class.create('Labels', null, ['Group'])
+
+	.defaults({
+		hardLimit: 8192,
+		fontSize: 10, // only px
+		fontFamily: 'Tahoma, sans',
+		// fillStyle: '#F0F0F0',
+		strokeStyle: '#0F0F0F',
+		lineWidth: 1.0
+	})
+
+	// constructor
+	.ctor(function ctor(app)
+	{
+		this.canvas = document.createElement('canvas');
+		this.context = this.canvas.getContext("2d");
+		app.viewport.appendChild(this.canvas);
+		this.canvas.style.position = "absolute";
+		this.canvas.style.display = "none";
+		this.canvas.style.left = "0px";
+		this.canvas.style.top = "0px";
+	})
+
+	.listen('resized', function resized() {
+		// sort items by their size
+		this.items.sort(function (a, b) {
+			return Math.max(b.w, b.h) - Math.max(a.w, a.h);
+		});
+		// remove previous fitting information
+		for (var i = 0; i < this.length; i += 1) {
+			delete this.items[i].fit;
+		};
+		// distribute in 2d texture
+		packer.fit(this.items);
+		var root = packer.root;
+		var canvas = this.canvas;
+		var context = this.context;
+		var width = canvas.width = pow2(root.w);
+		var height = canvas.height = pow2(root.h);
+		// re-draw the texture immediately
+		// maybe we need to resize it too
+		context.clearRect(0, 0, canvas.width, canvas.height);
+
+		// call the drawer for each item
+		for (var i = 0; i < this.length; i += 1) {
+			drawBg.call(this, this.items[i]);
+			setupDraw.call(this, this.items[i]);
+			drawText.call(this, this.items[i]);
+		}
+	})
+
+	.listen('inserted', function inserted(obj) {
+		var ctx = this.context, options = this.options;
+		setupDraw.call(this, obj); // for measure text!
+		obj.h = margin + options.fontSize + margin;
+		var size = ctx.measureText(obj.txt);
+		obj.w = margin + size.width + margin;
+	})
+	
+	;
+
+	// assign class to global namespace
+	THREEAPP('Labels', Labels);
+
+// EO private scope
+})(THREE, THREEAPP);
+;
+/*
+	Copyright 2017 Marcel Greter
+	https://www.github.com/mgreter
+*/
+
+// private scope
+(function (THREE, THREEAPP)
+{
+	"use strict";
+
+	var Labels = THREEAPP.Class.create('Labels', null, ['Plugin'])
+
+	.proto('provides', 'labels')
+
+	.ctor(function (app) {
+		// simply create one manager
+		app.labels = new THREEAPP.Labels(app);
+	})
+
+	;
+
+	// assign class to global namespace
+	THREEAPP('Plugin.Labels', Labels);
+
+// EO private scope
+})(THREE, THREEAPP);
+;
+/*
+	Copyright 2017 Marcel Greter
+	https://www.github.com/mgreter
+*/
+
+// private scope
+(function (THREE, THREEAPP)
+{
+	"use strict";
+
+	var margin = 2;
+
+	var Labels = THREEAPP.Class.create('Labels', THREE.Points, ['Resources', 'Labels'])
+
+	// default options
+	.defaults({
+		color: 0xFF0000,
+	})
+
+	// called on object construction
+	.ctor(function (app) {
+		this.prefetch({
+			'glsl_vert': ['S', app.path('shaders/labels.vert')],
+			'glsl_frag': ['S', app.path('shaders/labels.frag')]
+		})
+	})
+
+	// called when texture is loaded
+	.ready(function () {
+
+		var labels = this;
+		var canvas = labels.canvas;
+		var options = labels.options;
+		// allocate enough to hold all
+		var alloc = options.hardLimit;
+
+		// create an instanced buffer geometry with one vertice
+		// this is actually the point to be rendered and shaded
+		// we don't seem to be able to use offsets directly!?
+		var geometry = new THREE.InstancedBufferGeometry();
+
+		// create position offsets for instances
+		var offsets = new Float32Array(3*alloc);
+		// special uvs array to map labels
+		var uvs = new Float32Array(4*alloc);
+
+		// setup main position (shared for instances) and the offsets (custom for instances)
+		geometry.addAttribute( 'position', new THREE.BufferAttribute( new Float32Array(3), 3 ) );
+		geometry.addAttribute( 'offset', new THREE.InstancedBufferAttribute( offsets, 3, 1 ) );
+		geometry.addAttribute( 'uvs', new THREE.InstancedBufferAttribute( uvs, 4, 1 ) );
+
+		labels.texture = new THREE.Texture( labels.canvas );
+
+		// create custom minimal raw shader material
+		var material = new THREE.RawShaderMaterial({
+			uniforms: {
+				map: { type: 't', value: labels.texture },
+				appWidth: { type: 'f', value: app.width },
+				appHeight: { type: 'f', value: app.height },
+				texWidth: { type: 'f', value: canvas.width },
+				texHeight: { type: 'f', value: canvas.height }
+			},
+			blending: THREE.AdditiveBlending,
+			vertexShader: labels.asset('glsl_vert'),
+			fragmentShader: labels.asset('glsl_frag'),
+			transparent: true,
+			depthTest: false
+		});
+
+		// call three.js base constructor function
+		THREE.Points.call(labels, geometry, material);
+
+		// add ourself to parent if given by options
+		if (options.parent) options.parent.add(labels);
+
+		// reset draw count (set on resize)
+		geometry.maxInstancedCount = labels.items.length;
+
+		// needed to show texture initially?
+		labels.texture.needsUpdate = true;
+
+		// update label positions before rendering
+		labels.app.listen('preframe', function() {
+			geometry.attributes.offset.needsUpdate = true;
+			for (var i = 0; i < labels.items.length; i++) {
+				var label = labels.items[i];
+				if (!label.position) continue;
+				offsets[i*3+0] = label.position.x;
+				offsets[i*3+1] = label.position.y;
+				offsets[i*3+2] = label.position.z;
+			}
+		})
+
+		// update label positions before rendering
+		labels.app.listen('resized', function() {
+			labels.material.uniforms.appWidth.value = labels.app.width;
+			labels.material.uniforms.appHeight.value = labels.app.height;
+		});
+
+	})
+
+	.listen('resized', function ()
+	{
+		if (this.geometry && this.items) {
+			var texWidth = this.canvas.width;
+			var texHeight = this.canvas.height;
+			var offsets = this.geometry.attributes.offset.array;
+			var uvs = this.geometry.attributes.uvs.array;
+			for (var i = 0; i < this.items.length; i++) {
+				var item = this.items[i];
+				uvs[i*4+0] = item.fit.x + margin;
+				uvs[i*4+1] = item.fit.y + margin;
+				uvs[i*4+2] = item.w - margin * 1;
+				uvs[i*4+3] = item.h - margin * 1;
+			}
+			if (this.texture) this.texture.needsUpdate = true;
+			this.geometry.attributes.offset.needsUpdate = true;
+			this.geometry.attributes.uvs.needsUpdate = true;
+			this.material.uniforms.texWidth.value = texWidth;
+			this.material.uniforms.texHeight.value = texHeight;
+			this.geometry.maxInstancedCount = this.items.length;
+		}
+	})
+
+	;
+
+	// assign class to global namespace
+	THREEAPP('Objects.Labels', Labels);
 
 // EO private scope
 })(THREE, THREEAPP);
@@ -9201,4 +9662,4 @@ TWEEN.Interpolation = {
 
 })(this);
 
-/* crc: 437F3A2452A270F91CD85F29487FF4A7 */
+/* crc: C1DF5B24E7680E62F64D7F90143866C4 */

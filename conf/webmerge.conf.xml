@@ -75,6 +75,11 @@
 		<input path="src/Base/Grouped.js" />
 		<input path="src/Plugins/Tasker.js" />
 		<input path="src/Plugins/Scheduler.js" />
+		<!-- text label manager -->
+		<input path="lib/packer.growing.js" />
+		<input path="src/Labels.js" />
+		<input path="src/Plugins/Labels.js" />
+		<input path="src/Objects/Labels.js" />
 		<!-- <input path="src/Worker.js" /> -->
 		<input path="src/Tasker.js" />
 		<input path="src/Scheduler.js" />
