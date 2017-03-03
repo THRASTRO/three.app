@@ -115,7 +115,7 @@ webmerge.includeJS('/src/Labels.js?07940273175C');
 ;
 webmerge.includeJS('/src/Plugins/Labels.js?D40DE24FCAA9');
 ;
-webmerge.includeJS('/src/Objects/Labels.js?30B1569E3D61');
+webmerge.includeJS('/src/Objects/Labels.js?909CD97B6AFB');
 ;
 webmerge.includeJS('/src/Tasker.js?2E07340A1BE0');
 ;
@@ -135,4 +135,4 @@ webmerge.includeJS('/lib/three.dat.gui.js?6DC702232219');
 ;
 webmerge.includeJS('/lib/tween-16.6.0.js?64C27AF01BDE');
 
-/* crc: CAB58F672B1A21DBC05C96247D3659E2 */
+/* crc: 624ACE802C1F06771C1905D4014F60DD */

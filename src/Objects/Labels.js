@@ -70,6 +70,9 @@
 		// call three.js base constructor function
 		THREE.Points.call(labels, geometry, material);
 
+		// disable frustum culling
+		labels.frustumCulled = false;
+
 		// add ourself to parent if given by options
 		if (options.parent) options.parent.add(labels);
 

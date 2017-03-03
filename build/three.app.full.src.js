@@ -3495,6 +3495,9 @@ GrowingPacker.prototype = {
 		// call three.js base constructor function
 		THREE.Points.call(labels, geometry, material);
 
+		// disable frustum culling
+		labels.frustumCulled = false;
+
 		// add ourself to parent if given by options
 		if (options.parent) options.parent.add(labels);
 
@@ -9674,4 +9677,4 @@ TWEEN.Interpolation = {
 
 })(this);
 
-/* crc: CAB58F672B1A21DBC05C96247D3659E2 */
+/* crc: 624ACE802C1F06771C1905D4014F60DD */
