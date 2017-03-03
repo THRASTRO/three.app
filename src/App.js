@@ -70,11 +70,13 @@
 				// restart lookup
 				n = 0;
 			}
-			// get the plugin name
-			var name = plugin.name;
+			// get the plugin name from prototype
+			// name of plugin directly is minimized
+			var name = plugin.prototype.name;
 			// call plugin constructor
 			var opts = options[name];
-			plugins[i] = new plugin(this, opts);
+			var plugin = new plugin(this, opts);
+			plugins[i] = plugins[name] = plugin;
 			// ToDo: check why wait is gone?
 			// still seems to work correctly
 			if (!app.wait) continue;

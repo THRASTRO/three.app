@@ -33,7 +33,7 @@ if (typeof webmerge.includeJS != 'function')
 ;
 webmerge.includeJS('/src/Base.js?A7434CBA241B');
 ;
-webmerge.includeJS('/src/Base/Class.js?EE4817B7159F');
+webmerge.includeJS('/src/Base/Class.js?1BC236504EA6');
 ;
 webmerge.includeJS('/src/Mixins/Options.js?A436FFB7E71E');
 ;
@@ -91,6 +91,6 @@ webmerge.includeJS('/src/Plugins/MonitorGPU.js?C121EBBDA4D6');
 ;
 webmerge.includeJS('/lib/sprintf-0.7-beta1.js?5E9AB2F7C788');
 ;
-webmerge.includeJS('/src/App.js?07AD8119C071');
+webmerge.includeJS('/src/App.js?BE69123A0C33');
 
-/* crc: 2777E8C399974232178DF7BD4ACC4D32 */
+/* crc: 5A08B9ED5D822F0F262AB85E46522686 */

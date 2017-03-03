@@ -33,7 +33,7 @@ if (typeof webmerge.includeJS != 'function')
 ;
 webmerge.includeJS('/src/Base.js?A7434CBA241B');
 ;
-webmerge.includeJS('/src/Base/Class.js?EE4817B7159F');
+webmerge.includeJS('/src/Base/Class.js?1BC236504EA6');
 ;
 webmerge.includeJS('/src/Mixins/Options.js?A436FFB7E71E');
 ;
@@ -91,7 +91,7 @@ webmerge.includeJS('/src/Plugins/MonitorGPU.js?C121EBBDA4D6');
 ;
 webmerge.includeJS('/lib/sprintf-0.7-beta1.js?5E9AB2F7C788');
 ;
-webmerge.includeJS('/src/App.js?07AD8119C071');
+webmerge.includeJS('/src/App.js?BE69123A0C33');
 ;
 webmerge.includeJS('/src/Plugins/LZMA.js?1BAEEB55E474');
 ;
@@ -135,4 +135,4 @@ webmerge.includeJS('/lib/three.dat.gui.js?6DC702232219');
 ;
 webmerge.includeJS('/lib/tween-16.6.0.js?64C27AF01BDE');
 
-/* crc: C1DF5B24E7680E62F64D7F90143866C4 */
+/* crc: D77C958DF300A5D264EB0ED7A32CBB10 */

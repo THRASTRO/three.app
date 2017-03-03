@@ -189,6 +189,8 @@
 		// give the function a name (there is some cost attached to eval)
 		// there is no other way and it helps debugging in the console a lot!
 		if (name) eval("Klass = " + Klass.toString().replace(/\(\)/, name + '()'));
+		// let me be known on prototype
+		Klass.prototype.name = name;
 		// dispatch to the bread and butter mixin fn
 		return mixin.call(Class, Klass, base, mixins);
 	}

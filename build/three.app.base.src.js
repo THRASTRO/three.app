@@ -356,6 +356,8 @@
 		// give the function a name (there is some cost attached to eval)
 		// there is no other way and it helps debugging in the console a lot!
 		if (name) eval("Klass = " + Klass.toString().replace(/\(\)/, name + '()'));
+		// let me be known on prototype
+		Klass.prototype.name = name;
 		// dispatch to the bread and butter mixin fn
 		return mixin.call(Class, Klass, base, mixins);
 	}
@@ -2454,11 +2456,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				// restart lookup
 				n = 0;
 			}
-			// get the plugin name
-			var name = plugin.name;
+			// get the plugin name from prototype
+			// name of plugin directly is minimized
+			var name = plugin.prototype.name;
 			// call plugin constructor
 			var opts = options[name];
-			plugins[i] = new plugin(this, opts);
+			var plugin = new plugin(this, opts);
+			plugins[i] = plugins[name] = plugin;
 			// ToDo: check why wait is gone?
 			// still seems to work correctly
 			if (!app.wait) continue;
@@ -2571,4 +2575,4 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // EO private scope
 })(self, THREE, THREEAPP);
 
-/* crc: 2777E8C399974232178DF7BD4ACC4D32 */
+/* crc: 5A08B9ED5D822F0F262AB85E46522686 */
