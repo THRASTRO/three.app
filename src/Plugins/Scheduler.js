@@ -1,6 +1,5 @@
-	/*
-	Add license text here
-	Copyright 2016 Marcel Greter
+/*
+	Copyright 2017 Marcel Greter
 	https://www.github.com/mgreter
 */
 

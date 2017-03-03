@@ -1,3 +1,8 @@
+/*
+	Copyright 2017 Marcel Greter
+	https://www.github.com/mgreter
+*/
+
 (function(THREE, THREEAPP) {
 
 	function CPUs(path, cb)

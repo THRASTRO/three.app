@@ -59,7 +59,7 @@ webmerge.includeJS('/src/Base/Object3D.js?936DFA802CC2');
 ;
 webmerge.includeJS('/src/Base/Scene.js?EF60849AA383');
 ;
-webmerge.includeJS('/src/Base/LOD.js?CE6576E1D480');
+webmerge.includeJS('/src/Base/LOD.js?75B23E365339');
 ;
 webmerge.includeJS('/src/Plugins/Clock.js?793393A474E9');
 ;
@@ -93,4 +93,4 @@ webmerge.includeJS('/lib/sprintf-0.7-beta1.js?5E9AB2F7C788');
 ;
 webmerge.includeJS('/src/App.js?BE69123A0C33');
 
-/* crc: 5A08B9ED5D822F0F262AB85E46522686 */
+/* crc: CFF34FD66D722CD74B7F3D8143EE0E7B */

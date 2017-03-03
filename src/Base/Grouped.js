@@ -37,14 +37,14 @@
 		if (self.current) {
 			// append to active group until full
 			if (self.current.belowHardLimit()) {
-				self.current.insert(obj);
+				self.current.add(obj);
 				return self;
 			}
 			// check if any other group has space now
 			for (var i = 0; i < self.groups.length; i++) {
 				if (self.groups[i].belowHardLimit()) {
 					self.current = self.groups[i];
-					self.current.insert(obj);
+					self.current.add(obj);
 					return self;
 				}
 			}
@@ -56,7 +56,7 @@
 		// store new group on ourself
 		self.groups.push(self.current);
 		// add object to the group
-		self.current.insert(obj);
+		self.current.add(obj);
 		// Decouple tasker from group
 		self.current.trigger('enable');
 		// chainable
@@ -137,7 +137,7 @@
 					if (idx == -1 || L == n) break;
 					// swap object group
 					this.groups[L].delete(idx);
-					this.groups[n].insert(item);
+					this.groups[n].add(item);
 					// check if old group now empty
 					if (this.groups[L].length == 0) {
 						// mark the group as been removed

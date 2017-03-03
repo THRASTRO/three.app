@@ -1050,8 +1050,7 @@ THREE.TextureLoader.prototype = {
 })();
 ;
 /*
-	Add license text here
-	Copyright 2016 Marcel Greter
+	Copyright 2017 Marcel Greter
 	https://www.github.com/mgreter
 */
 
@@ -2634,6 +2633,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 })(THREE, THREEAPP);
 
 ;
+/*
+	Copyright 2017 Marcel Greter
+	https://www.github.com/mgreter
+*/
+
 (function(THREE, THREEAPP) {
 
 	function CPUs(path, cb)
@@ -2720,6 +2724,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 })(THREE, THREEAPP);
 ;
+/*
+	Copyright 2017 Marcel Greter
+	https://www.github.com/mgreter
+*/
+
 // expects only one msg!
 onmessage = function(e)
 {
@@ -2799,7 +2808,7 @@ onmessage = function(e)
 
 	// you may want to overload this
 	// ToDo: maybe add hooks instead
-	.method('insert', function (obj) {
+	.method('add', function (obj) {
 
 		// maybe space is available
 		if (this.belowSoftLimit()) {
@@ -2882,14 +2891,14 @@ onmessage = function(e)
 		if (self.current) {
 			// append to active group until full
 			if (self.current.belowHardLimit()) {
-				self.current.insert(obj);
+				self.current.add(obj);
 				return self;
 			}
 			// check if any other group has space now
 			for (var i = 0; i < self.groups.length; i++) {
 				if (self.groups[i].belowHardLimit()) {
 					self.current = self.groups[i];
-					self.current.insert(obj);
+					self.current.add(obj);
 					return self;
 				}
 			}
@@ -2901,7 +2910,7 @@ onmessage = function(e)
 		// store new group on ourself
 		self.groups.push(self.current);
 		// add object to the group
-		self.current.insert(obj);
+		self.current.add(obj);
 		// Decouple tasker from group
 		self.current.trigger('enable');
 		// chainable
@@ -2982,7 +2991,7 @@ onmessage = function(e)
 					if (idx == -1 || L == n) break;
 					// swap object group
 					this.groups[L].delete(idx);
-					this.groups[n].insert(item);
+					this.groups[n].add(item);
 					// check if old group now empty
 					if (this.groups[L].length == 0) {
 						// mark the group as been removed
@@ -3017,9 +3026,8 @@ onmessage = function(e)
 
 })(THREE, THREEAPP);
 ;
-	/*
-	Add license text here
-	Copyright 2016 Marcel Greter
+/*
+	Copyright 2017 Marcel Greter
 	https://www.github.com/mgreter
 */
 
@@ -3054,9 +3062,8 @@ onmessage = function(e)
 // EO private scope
 })(THREE, THREEAPP);
 ;
-	/*
-	Add license text here
-	Copyright 2016 Marcel Greter
+/*
+	Copyright 2017 Marcel Greter
 	https://www.github.com/mgreter
 */
 
@@ -3341,6 +3348,8 @@ GrowingPacker.prototype = {
 		this.canvas.style.display = "none";
 		this.canvas.style.left = "0px";
 		this.canvas.style.top = "0px";
+		this.canvas.height = 128;
+		this.canvas.width = 128;
 	})
 
 	.listen('resized', function resized() {
@@ -4073,8 +4082,7 @@ GrowingPacker.prototype = {
 })(THREE, THREEAPP);
 ;
 /*
-	Add license text here
-	Copyright 2016 Marcel Greter
+	Copyright 2017 Marcel Greter
 	https://www.github.com/mgreter
 */
 
@@ -9666,4 +9674,4 @@ TWEEN.Interpolation = {
 
 })(this);
 
-/* crc: D77C958DF300A5D264EB0ED7A32CBB10 */
+/* crc: CAB58F672B1A21DBC05C96247D3659E2 */

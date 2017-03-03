@@ -23,6 +23,8 @@ var app = new THREEAPP.App(vp, {
 	root: '..',
 	// Tasker plugin options
 	Tasker: { root: '../src' },
+	// custom option
+	groupier: true,
 	// autostart
 	start: true
 });
@@ -52,10 +54,18 @@ function createRandomPosition() {
 }
 
 app.listen('ready', function () {
-	labels = new THREEAPP.Objects.Labels(app, {
-		hardLimit: 65536,
-		parent: app.scene
-	});
+	if (this.options.groupier) {
+		labels = new THREEAPP.Grouped(app, {
+			ctor: THREEAPP.Objects.Labels,
+			hardLimit: 8192,
+			parent: app.scene
+		});
+	} else {
+		labels = new THREEAPP.Objects.Labels(app, {
+			hardLimit: 65536,
+			parent: app.scene
+		});
+	}
 	addLabels(128);
 })
 
@@ -63,7 +73,7 @@ function addLabels(amount) {
 	for (var i = 0; i < amount; i++) {
 		var len = Math.random() * 14 + 3;
 		var pos = createRandomPosition();
-		labels.insert({
+		labels.add({
 			position: pos,
 			lineWidth: 1.0,
 			txt: createRandomWord(len),
@@ -84,7 +94,7 @@ function addLabels(amount) {
 			app.scene.add(mesh); // add to scene
 		}
 		var info = document.getElementById('labels');
-		info.innerHTML = labels.items.length + ' Labels';
+		info.innerHTML = labels.length + ' Labels';
 	}
 }
 

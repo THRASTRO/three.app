@@ -56,7 +56,7 @@
 
 	// you may want to overload this
 	// ToDo: maybe add hooks instead
-	.method('insert', function (obj) {
+	.method('add', function (obj) {
 
 		// maybe space is available
 		if (this.belowSoftLimit()) {

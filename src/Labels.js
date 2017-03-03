@@ -92,6 +92,8 @@
 		this.canvas.style.display = "none";
 		this.canvas.style.left = "0px";
 		this.canvas.style.top = "0px";
+		this.canvas.height = 128;
+		this.canvas.width = 128;
 	})
 
 	.listen('resized', function resized() {

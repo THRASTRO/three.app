@@ -1050,8 +1050,7 @@ THREE.TextureLoader.prototype = {
 })();
 ;
 /*
-	Add license text here
-	Copyright 2016 Marcel Greter
+	Copyright 2017 Marcel Greter
 	https://www.github.com/mgreter
 */
 
@@ -2575,4 +2574,4 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // EO private scope
 })(self, THREE, THREEAPP);
 
-/* crc: 5A08B9ED5D822F0F262AB85E46522686 */
+/* crc: CFF34FD66D722CD74B7F3D8143EE0E7B */
