@@ -17,7 +17,12 @@
 	var ThreeApp = THREEAPP.Class.create('ThreeApp', null, ['Events', 'Options'])
 
 	.defaults({
-		root: '.'
+		root: '.',
+		log: {
+			debug: false,
+			info: false,
+			warn: true
+		}
 	})
 
 	.ctor(function ctor(vp, options) {
@@ -147,12 +152,15 @@
 	// implement some logger methods
 	// pass through sprintf to console
 	.method('log', function log() {
+		if (!this.options.log.debug) return;
 		console.log(sprintf.apply(this, arguments));
 	})
 	.method('warn', function warn() {
+		if (!this.options.log.warn) return;
 		console.warn(sprintf.apply(this, arguments));
 	})
 	.method('info', function info() {
+		if (!this.options.log.info) return;
 		console.info(sprintf.apply(this, arguments));
 	})
 

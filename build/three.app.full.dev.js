@@ -91,7 +91,7 @@ webmerge.includeJS('/src/Plugins/MonitorGPU.js?C121EBBDA4D6');
 ;
 webmerge.includeJS('/lib/sprintf-0.7-beta1.js?5E9AB2F7C788');
 ;
-webmerge.includeJS('/src/App.js?BE69123A0C33');
+webmerge.includeJS('/src/App.js?3B8FC68E2936');
 ;
 webmerge.includeJS('/src/Plugins/LZMA.js?1BAEEB55E474');
 ;
@@ -111,11 +111,11 @@ webmerge.includeJS('/src/Plugins/Scheduler.js?E8866411154A');
 ;
 webmerge.includeJS('/lib/packer.growing.js?B338A7B90678');
 ;
-webmerge.includeJS('/src/Labels.js?07940273175C');
+webmerge.includeJS('/src/Labels.js?8E1204746D39');
 ;
 webmerge.includeJS('/src/Plugins/Labels.js?D40DE24FCAA9');
 ;
-webmerge.includeJS('/src/Objects/Labels.js?909CD97B6AFB');
+webmerge.includeJS('/src/Objects/Labels.js?89D729D5C822');
 ;
 webmerge.includeJS('/src/Tasker.js?2E07340A1BE0');
 ;
@@ -135,4 +135,4 @@ webmerge.includeJS('/lib/three.dat.gui.js?6DC702232219');
 ;
 webmerge.includeJS('/lib/tween-16.6.0.js?64C27AF01BDE');
 
-/* crc: 624ACE802C1F06771C1905D4014F60DD */
+/* crc: 62A274EC6E443B5D4BC81D97D87D920E */

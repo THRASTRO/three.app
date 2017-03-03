@@ -2402,7 +2402,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	var ThreeApp = THREEAPP.Class.create('ThreeApp', null, ['Events', 'Options'])
 
 	.defaults({
-		root: '.'
+		root: '.',
+		log: {
+			debug: false,
+			info: false,
+			warn: true
+		}
 	})
 
 	.ctor(function ctor(vp, options) {
@@ -2532,12 +2537,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	// implement some logger methods
 	// pass through sprintf to console
 	.method('log', function log() {
+		if (!this.options.log.debug) return;
 		console.log(sprintf.apply(this, arguments));
 	})
 	.method('warn', function warn() {
+		if (!this.options.log.warn) return;
 		console.warn(sprintf.apply(this, arguments));
 	})
 	.method('info', function info() {
+		if (!this.options.log.info) return;
 		console.info(sprintf.apply(this, arguments));
 	})
 
@@ -2574,4 +2582,4 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // EO private scope
 })(self, THREE, THREEAPP);
 
-/* crc: CFF34FD66D722CD74B7F3D8143EE0E7B */
+/* crc: 2EBEB11A6FCB9E2C028964125EC0650C */

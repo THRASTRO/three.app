@@ -97,6 +97,8 @@
 	})
 
 	.listen('resized', function resized() {
+		// log texture drawn event
+		this.app.log('drawing texture');
 		// sort items by their size
 		this.items.sort(function (a, b) {
 			return Math.max(b.w, b.h) - Math.max(a.w, a.h);
@@ -122,6 +124,8 @@
 			setupDraw.call(this, this.items[i]);
 			drawText.call(this, this.items[i]);
 		}
+		// invoke async (delayed)
+		this.invoke('texture.drawn');
 	})
 
 	.listen('inserted', function inserted(obj) {

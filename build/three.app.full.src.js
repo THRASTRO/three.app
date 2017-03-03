@@ -2402,7 +2402,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	var ThreeApp = THREEAPP.Class.create('ThreeApp', null, ['Events', 'Options'])
 
 	.defaults({
-		root: '.'
+		root: '.',
+		log: {
+			debug: false,
+			info: false,
+			warn: true
+		}
 	})
 
 	.ctor(function ctor(vp, options) {
@@ -2532,12 +2537,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	// implement some logger methods
 	// pass through sprintf to console
 	.method('log', function log() {
+		if (!this.options.log.debug) return;
 		console.log(sprintf.apply(this, arguments));
 	})
 	.method('warn', function warn() {
+		if (!this.options.log.warn) return;
 		console.warn(sprintf.apply(this, arguments));
 	})
 	.method('info', function info() {
+		if (!this.options.log.info) return;
 		console.info(sprintf.apply(this, arguments));
 	})
 
@@ -3353,6 +3361,8 @@ GrowingPacker.prototype = {
 	})
 
 	.listen('resized', function resized() {
+		// log texture drawn event
+		this.app.log('drawing texture');
 		// sort items by their size
 		this.items.sort(function (a, b) {
 			return Math.max(b.w, b.h) - Math.max(a.w, a.h);
@@ -3378,6 +3388,8 @@ GrowingPacker.prototype = {
 			setupDraw.call(this, this.items[i]);
 			drawText.call(this, this.items[i]);
 		}
+		// invoke async (delayed)
+		this.invoke('texture.drawn');
 	})
 
 	.listen('inserted', function inserted(obj) {
@@ -3504,9 +3516,6 @@ GrowingPacker.prototype = {
 		// reset draw count (set on resize)
 		geometry.maxInstancedCount = labels.items.length;
 
-		// needed to show texture initially?
-		labels.texture.needsUpdate = true;
-
 		// update label positions before rendering
 		labels.app.listen('preframe', function() {
 			geometry.attributes.offset.needsUpdate = true;
@@ -3541,13 +3550,18 @@ GrowingPacker.prototype = {
 				uvs[i*4+2] = item.w - margin * 1;
 				uvs[i*4+3] = item.h - margin * 1;
 			}
-			if (this.texture) this.texture.needsUpdate = true;
 			this.geometry.attributes.offset.needsUpdate = true;
 			this.geometry.attributes.uvs.needsUpdate = true;
 			this.material.uniforms.texWidth.value = texWidth;
 			this.material.uniforms.texHeight.value = texHeight;
 			this.geometry.maxInstancedCount = this.items.length;
 		}
+	})
+
+	.listen('texture.drawn', function ()
+	{
+		this.app.log('set texture needsUpdate');
+		if (this.texture) this.texture.needsUpdate = true;
 	})
 
 	;
@@ -9677,4 +9691,4 @@ TWEEN.Interpolation = {
 
 })(this);
 
-/* crc: 624ACE802C1F06771C1905D4014F60DD */
+/* crc: 62A274EC6E443B5D4BC81D97D87D920E */

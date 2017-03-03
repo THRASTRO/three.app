@@ -23,6 +23,8 @@ var app = new THREEAPP.App(vp, {
 	root: '..',
 	// Tasker plugin options
 	Tasker: { root: '../src' },
+	// enable debug logs
+	log: { debug: true },
 	// custom option
 	groupier: true,
 	// autostart

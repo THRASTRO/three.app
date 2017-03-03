@@ -91,6 +91,6 @@ webmerge.includeJS('/src/Plugins/MonitorGPU.js?C121EBBDA4D6');
 ;
 webmerge.includeJS('/lib/sprintf-0.7-beta1.js?5E9AB2F7C788');
 ;
-webmerge.includeJS('/src/App.js?BE69123A0C33');
+webmerge.includeJS('/src/App.js?3B8FC68E2936');
 
-/* crc: CFF34FD66D722CD74B7F3D8143EE0E7B */
+/* crc: 2EBEB11A6FCB9E2C028964125EC0650C */
