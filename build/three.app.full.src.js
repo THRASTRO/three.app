@@ -3280,8 +3280,9 @@ GrowingPacker.prototype = {
 	{
 		var ctx = this.context;
 		var opt = this.options;
-		ctx.font = opt.fontSize + "px "
-			+ opt.fontFamily;
+		var fontSize = label.fontSize || opt.fontSize;
+		var fontFamily = label.fontFamily || opt.fontFamily;
+		ctx.font = fontSize + "px " + fontFamily;
 		ctx.fillStyle = label.color || opt.fillStyle;
 		ctx.strokeStyle = label.stroke || opt.strokeStyle;
 		ctx.lineWidth = label.lineWidth || opt.lineWidth;
@@ -3392,12 +3393,13 @@ GrowingPacker.prototype = {
 		this.invoke('texture.drawn');
 	})
 
-	.listen('inserted', function inserted(obj) {
+	.listen('inserted', function inserted(label) {
 		var ctx = this.context, options = this.options;
-		setupDraw.call(this, obj); // for measure text!
-		obj.h = margin + options.fontSize + margin;
-		var size = ctx.measureText(obj.txt);
-		obj.w = margin + size.width + margin;
+		setupDraw.call(this, label); // for measure text!
+		var fontSize = label.fontSize || options.fontSize;
+		label.h = margin + fontSize + margin;
+		var size = ctx.measureText(label.txt);
+		label.w = margin + size.width + margin;
 	})
 	
 	;
@@ -3422,9 +3424,25 @@ GrowingPacker.prototype = {
 
 	.proto('provides', 'labels')
 
+	.defaults({
+		groupier: true
+	})
+
 	.ctor(function (app) {
-		// simply create one manager
-		app.labels = new THREEAPP.Labels(app);
+		if (this.options.groupier) {
+			// dynamically add more group instances
+			app.labels = new THREEAPP.Grouped(app, {
+				ctor: THREEAPP.Objects.Labels,
+				hardLimit: 8192,
+				parent: app.scene
+			});
+		} else {
+			// only add one group with a fixed item limit
+			app.labels = new THREEAPP.Objects.Labels(app, {
+				hardLimit: 65536,
+				parent: app.scene
+			});
+		}
 	})
 
 	;
@@ -9691,4 +9709,4 @@ TWEEN.Interpolation = {
 
 })(this);
 
-/* crc: 62A274EC6E443B5D4BC81D97D87D920E */
+/* crc: 0DD9845C847A2734765F166F04808FB0 */

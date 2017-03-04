@@ -21,6 +21,8 @@ var app = new THREEAPP.App(vp, {
 	],
 	// relative root path
 	root: '..',
+	// disable automatic grouping
+	Labels: { groupier: false },
 	// Tasker plugin options
 	Tasker: { root: '../src' },
 	// enable debug logs
@@ -55,19 +57,16 @@ function createRandomPosition() {
 	);
 }
 
-app.listen('ready', function () {
-	if (this.options.groupier) {
-		labels = new THREEAPP.Grouped(app, {
-			ctor: THREEAPP.Objects.Labels,
-			hardLimit: 8192,
-			parent: app.scene
-		});
-	} else {
-		labels = new THREEAPP.Objects.Labels(app, {
-			hardLimit: 65536,
-			parent: app.scene
-		});
+function createRandomColorStr() {
+	var letters = '0123456789ABCDEF';
+	var color = '#';
+	for (var i = 0; i < 6; i++ ) {
+		color += letters[Math.floor(Math.random() * 16)];
 	}
+	return color;
+}
+
+app.listen('ready', function () {
 	addLabels(128);
 })
 
@@ -75,12 +74,14 @@ function addLabels(amount) {
 	for (var i = 0; i < amount; i++) {
 		var len = Math.random() * 14 + 3;
 		var pos = createRandomPosition();
+		var labels = this.app.labels;
 		labels.add({
+			fontSize: 10,
 			position: pos,
 			lineWidth: 1.0,
 			txt: createRandomWord(len),
-			// stroke: 'rgba(0, 0, 0, 1)',
-			// color: 'rgba(255, 255, 255, 1)',
+			// color: createRandomColorStr(),
+			// stroke: createRandomColorStr(),
 			// background: 'rgba(32, 32, 32, 1)',
 		});
 		// add sphere to control label alignment
@@ -97,6 +98,14 @@ function addLabels(amount) {
 		}
 		var info = document.getElementById('labels');
 		info.innerHTML = labels.length + ' Labels';
+	}
+}
+
+function toggleCanvas() {
+	if (app.labels.canvas.style.display == "none") {
+		app.labels.canvas.style.display = "";
+	} else {
+		app.labels.canvas.style.display = "none"
 	}
 }
 

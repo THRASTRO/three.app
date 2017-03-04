@@ -111,9 +111,9 @@ webmerge.includeJS('/src/Plugins/Scheduler.js?E8866411154A');
 ;
 webmerge.includeJS('/lib/packer.growing.js?B338A7B90678');
 ;
-webmerge.includeJS('/src/Labels.js?8E1204746D39');
+webmerge.includeJS('/src/Labels.js?2649CADB0A73');
 ;
-webmerge.includeJS('/src/Plugins/Labels.js?D40DE24FCAA9');
+webmerge.includeJS('/src/Plugins/Labels.js?4D47499C6AD2');
 ;
 webmerge.includeJS('/src/Objects/Labels.js?89D729D5C822');
 ;
@@ -135,4 +135,4 @@ webmerge.includeJS('/lib/three.dat.gui.js?6DC702232219');
 ;
 webmerge.includeJS('/lib/tween-16.6.0.js?64C27AF01BDE');
 
-/* crc: 62A274EC6E443B5D4BC81D97D87D920E */
+/* crc: 0DD9845C847A2734765F166F04808FB0 */
