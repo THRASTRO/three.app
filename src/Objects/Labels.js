@@ -97,6 +97,13 @@
 			labels.material.uniforms.appHeight.value = labels.app.height;
 		});
 
+		// resize may was triggered to early
+		// re-trigger in that case (FF mostly)
+		if (this.delayedResize) {
+			this.delayedResize = false;
+			this.trigger('resized');
+		}
+
 	})
 
 	.listen('resized', function ()
@@ -118,6 +125,10 @@
 			this.material.uniforms.texWidth.value = texWidth;
 			this.material.uniforms.texHeight.value = texHeight;
 			this.geometry.maxInstancedCount = this.items.length;
+		}
+		else {
+			// remember early event 
+			this.delayedResize = true;
 		}
 	})
 
