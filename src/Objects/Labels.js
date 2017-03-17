@@ -79,9 +79,6 @@
 		// reset draw count (set on resize)
 		geometry.maxInstancedCount = labels.items.length;
 
-		// needed to show texture initially?
-		labels.texture.needsUpdate = true;
-
 		// update label positions before rendering
 		labels.app.listen('preframe', function() {
 			geometry.attributes.offset.needsUpdate = true;
@@ -104,25 +101,27 @@
 
 	.listen('resized', function ()
 	{
-		if (this.geometry && this.items) {
-			var texWidth = this.canvas.width;
-			var texHeight = this.canvas.height;
-			var offsets = this.geometry.attributes.offset.array;
-			var uvs = this.geometry.attributes.uvs.array;
-			for (var i = 0; i < this.items.length; i++) {
-				var item = this.items[i];
-				uvs[i*4+0] = item.fit.x + margin;
-				uvs[i*4+1] = item.fit.y + margin;
-				uvs[i*4+2] = item.w - margin * 1;
-				uvs[i*4+3] = item.h - margin * 1;
-			}
-			if (this.texture) this.texture.needsUpdate = true;
-			this.geometry.attributes.offset.needsUpdate = true;
-			this.geometry.attributes.uvs.needsUpdate = true;
-			this.material.uniforms.texWidth.value = texWidth;
-			this.material.uniforms.texHeight.value = texHeight;
-			this.geometry.maxInstancedCount = this.items.length;
+		var texWidth = this.canvas.width;
+		var texHeight = this.canvas.height;
+		var offsets = this.geometry.attributes.offset.array;
+		var uvs = this.geometry.attributes.uvs.array;
+		for (var i = 0; i < this.items.length; i++) {
+			var item = this.items[i];
+			uvs[i*4+0] = item.fit.x;
+			uvs[i*4+1] = item.fit.y;
+			uvs[i*4+2] = item.w;
+			uvs[i*4+3] = item.h;
 		}
+		this.geometry.attributes.offset.needsUpdate = true;
+		this.geometry.attributes.uvs.needsUpdate = true;
+		this.material.uniforms.texWidth.value = texWidth;
+		this.material.uniforms.texHeight.value = texHeight;
+		this.geometry.maxInstancedCount = this.items.length;
+	})
+
+	.listen('texture.drawn', function ()
+	{
+		this.texture.needsUpdate = true;
 	})
 
 	;

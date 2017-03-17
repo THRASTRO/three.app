@@ -16,8 +16,9 @@
 	{
 		var ctx = this.context;
 		var opt = this.options;
-		ctx.font = opt.fontSize + "px "
-			+ opt.fontFamily;
+		var fontSize = label.fontSize || opt.fontSize;
+		var fontFamily = label.fontFamily || opt.fontFamily;
+		ctx.font = fontSize + "px " + fontFamily;
 		ctx.fillStyle = label.color || opt.fillStyle;
 		ctx.strokeStyle = label.stroke || opt.strokeStyle;
 		ctx.lineWidth = label.lineWidth || opt.lineWidth;
@@ -30,12 +31,14 @@
 		var y = fit.y + label.h;
 		y = y - margin - 1;
 		var ctx = this.context;
-		if (label.background) {
-			ctx.fillStyle = label.background;
+		var opt = this.options;
+		if (label.background || opt.background) {
+			ctx.fillStyle = label.background || opt.background;
 			ctx.fillRect(fit.x, fit.y, label.w, label.h);
 		}
-		if (label.border) {
-			ctx.strokeStyle = label.border;
+		if (label.borderStyle || opt.borderStyle) {
+			ctx.strokeStyle = label.borderStyle || opt.borderStyle;
+			ctx.lineWidth = label.borderWidth || opt.borderWidth || 1.0;
 			ctx.rect(fit.x, fit.y, label.w, label.h);
 			ctx.stroke();
 		}
@@ -46,7 +49,8 @@
 		var fit = label.fit;
 		var x = fit.x + margin;
 		var y = fit.y + label.h;
-		y = y - margin - 2
+		// not sure how to measure baseline offset?
+		y = y - margin - Math.round(label.h / 6);
 		var ctx = this.context;
 		var opt = this.options;
 		if (label.stroke || opt.strokeStyle) {
@@ -96,7 +100,8 @@
 		this.canvas.width = 128;
 	})
 
-	.listen('resized', function resized() {
+	.listen('resized', function resized()
+	{
 		// sort items by their size
 		this.items.sort(function (a, b) {
 			return Math.max(b.w, b.h) - Math.max(a.w, a.h);
@@ -122,14 +127,18 @@
 			setupDraw.call(this, this.items[i]);
 			drawText.call(this, this.items[i]);
 		}
+		// invoke async (delayed)
+		this.invoke('texture.drawn');
 	})
 
-	.listen('inserted', function inserted(obj) {
+	.listen('inserted', function inserted(label)
+	{
 		var ctx = this.context, options = this.options;
-		setupDraw.call(this, obj); // for measure text!
-		obj.h = margin + options.fontSize + margin;
-		var size = ctx.measureText(obj.txt);
-		obj.w = margin + size.width + margin;
+		setupDraw.call(this, label); // for measure text!
+		var fontSize = label.fontSize || options.fontSize;
+		label.h = margin + fontSize + margin;
+		var size = ctx.measureText(label.txt);
+		label.w = margin + size.width + margin;
 	})
 	
 	;

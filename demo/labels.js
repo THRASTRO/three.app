@@ -21,10 +21,13 @@ var app = new THREEAPP.App(vp, {
 	],
 	// relative root path
 	root: '..',
+	// disable automatic grouping
+	// create single canvas to inspect
+	Labels: { groupier: false },
 	// Tasker plugin options
 	Tasker: { root: '../src' },
-	// custom option
-	groupier: true,
+	// enable debug logs
+	log: { debug: true },
 	// autostart
 	start: true
 });
@@ -53,38 +56,44 @@ function createRandomPosition() {
 	);
 }
 
-app.listen('ready', function () {
-	if (this.options.groupier) {
-		labels = new THREEAPP.Grouped(app, {
-			ctor: THREEAPP.Objects.Labels,
-			hardLimit: 8192,
-			parent: app.scene
-		});
-	} else {
-		labels = new THREEAPP.Objects.Labels(app, {
-			hardLimit: 65536,
-			parent: app.scene
-		});
+function createRandomColorStr() {
+	var letters = '0123456789ABCDEF';
+	var color = '#';
+	for (var i = 0; i < 6; i++ ) {
+		color += letters[Math.floor(Math.random() * 16)];
 	}
+	return color;
+}
+
+app.listen('ready', function () {
 	addLabels(128);
 })
 
-function addLabels(amount) {
+var listening = false;
+
+function addLabels(amount, word) {
 	for (var i = 0; i < amount; i++) {
 		var len = Math.random() * 14 + 3;
 		var pos = createRandomPosition();
+		var labels = this.app.labels;
 		labels.add({
+			fontSize: 11,
 			position: pos,
 			lineWidth: 1.0,
-			txt: createRandomWord(len),
-			// stroke: 'rgba(0, 0, 0, 1)',
-			// color: 'rgba(255, 255, 255, 1)',
+			txt: word || createRandomWord(len),
+			color: createRandomColorStr(),
+			// borderWidth: 1.0,
+			// borderStyle: '#000000',
+			color: '#000000',
+			stroke: '#0F0F0F',
+			// border: createRandomColorStr(),
+			// stroke: createRandomColorStr(),
 			// background: 'rgba(32, 32, 32, 1)',
 		});
 		// add sphere to control label alignment
 		var checkbox = document.getElementById('addSphere');
 		if (checkbox && checkbox.checked) {
-			// create a sphere geometry with radius 4
+			// create a sphere geometry with radius 3
 			var geometry = new THREE.IcosahedronGeometry(3, 1);
 			// create a lambert material with red color (needs light!)
 			var material = new THREE.MeshLambertMaterial({ color: 0xCC0000 });
@@ -93,8 +102,24 @@ function addLabels(amount) {
 			mesh.position.copy(pos); // set position
 			app.scene.add(mesh); // add to scene
 		}
-		var info = document.getElementById('labels');
-		info.innerHTML = labels.length + ' Labels';
+	}
+	if (!listening) {
+		listening = true;
+		labels.listen('resized', function () {
+			var info = document.getElementById('labels');
+			info.innerHTML = labels.length + ' Labels<br>';
+			var canvas = app.labels.canvas;
+			if (canvas) info.innerHTML +=
+				canvas.width + "x" + canvas.height;
+		}, - 9999);
+	}
+}
+
+function toggleCanvas() {
+	if (app.labels.canvas.style.display == "none") {
+		app.labels.canvas.style.display = "";
+	} else {
+		app.labels.canvas.style.display = "none"
 	}
 }
 

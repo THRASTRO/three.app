@@ -31,9 +31,9 @@ simply not fully thought through yet. Let's see how it evolves from here.
 This custom class framework is based on the extensibility of javascript, a prototype
 based programming language. It provides a few integral building blocks to declare your
 own custom classes. JavaScript only has direct inheritance and no true polymorphism (as
-determinded by `instanceof`). We are adopting the mixins paradigm from other languages
+determined by `instanceof`). We are adopting the mixins paradigm from other languages
 and adhere to direct inheritance in this implementation. Each class is "born" in three
-life-cylces: `ctor`, `init` and `ready`. Every base class or mixin can add hooks for
+life-cycles: `ctor`, `init` and `ready`. Every base class or mixin can add hooks for
 each of these three life-cycles. They are executed in order when an object is constructed.
 Ie. all `ctor` hooks of all mixins and base classes are executed before calling the `init`
 hooks next before finally (delayed) calling `ready`.
@@ -55,7 +55,7 @@ and `ready` functions are invoked accordingly.
 [3]: https://github.com/mgreter/three.app/blob/develop/src/Base/Object3D.js
 [4]: https://github.com/mgreter/three.app/blob/develop/src/Mixins/Group.js
 
-## Initializtation Order
+## Initialization Order
 
 The `ctor` and `init` hooks are always called synchronous: Calling all `ctor` hooks of all
 base classes and mixins first, and then the `init` functions. The `ready` function might
@@ -101,8 +101,8 @@ var Object3D = THREEAPP.Class.create('Custom', THREEAPP.Object3D, ['Resources'])
 ## Delaying the ready events
 
 As we've seen above the `ready` hook is delayed by registering `wait` objects. The example above
-uses a standrad Promise object that is passed to `wait`. Beside standard `Promise` objects it also
-accepts objects that implement our `ready` lisntener event (i.e. just pass a plugin to wait).
+uses a standard Promise object that is passed to `wait`. Beside standard `Promise` objects it also
+accepts objects that implement our `ready` listener event (i.e. just pass a plugin to wait).
 
 ```js
 .init(function (app)
@@ -171,7 +171,7 @@ ToDo: documentation needed for all plugins!
 - [PerspectiveCamera](src/Plugins/PerspectiveCamera.js): Adds a perspective camera
 - [TrackballControls](src/Plugins/TrackballControls.js): Enable standard trackball control
 - [Scene](src/Plugins/Scene.js): Main scene to be rendered
-- [Background](src/Plugins/Background.js): Optional background scne
+- [Background](src/Plugins/Background.js): Optional background scene
 - [Uniforms](src/Plugins/Uniforms.js): Shared uniforms interface
 - [Loader](src/Plugins/Loader.js): Shared resource loader
 - [Progress](src/Plugins/Progress.js): Show loading progress
@@ -181,7 +181,7 @@ ToDo: documentation needed for all plugins!
 - [Tween](src/Plugins/Tween.js): Enable tween library on frame drawing
 - [Clock](src/Plugins/Clock.js): Enable threejs clock and update time
 - [Labels](src/Plugins/Labels.js): Enable plugin to show text labels
-- [Tasker](src/Plugins/Tasker.js): Enable plguin for background tasks
+- [Tasker](src/Plugins/Tasker.js): Enable plugin for background tasks
 - [Scheduler](src/Plugins/Scheduler.js): Enable plugin to schedule tasks
 - [DATUI](src/Plugins/DATUI.js): Enable debugging options UI
 - [MonitorCPU](src/Plugins/MonitorCPU.js): Enable debugging CPU monitor
@@ -203,20 +203,20 @@ var app = new THREEAPP.App(vp, {
 		THREEAPP.Plugin.Loader,
 		THREEAPP.Plugin.Progress,
 		THREEAPP.Plugin.Labels,
-		// add statitics monitor
+		// add statistics monitor
 		THREEAPP.Plugin.MonitorGPU
 	],
 	// relative root path
 	root: '..',
 	// Tasker plugin options
 	Tasker: { root: '../src' },
-	// autostart
+	// auto-start
 	start: true
 });
 ```
 
 Plugin options are defined directly on the app options with
-the according plugin name (i.e. `Tasker` above). These otions
+the according plugin name (i.e. `Tasker` above). These options
 are passed directly to the plugin constructor too.
 
 # Issues
@@ -243,7 +243,7 @@ var app = new THREEAPP.App(vp, {
 		THREEAPP.Plugin.PerspectiveCamera,
 		THREEAPP.Plugin.TrackballControls,
 	],
-	// autostart
+	// auto-start
 	start: true
 });
 

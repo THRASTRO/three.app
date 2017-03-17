@@ -2402,7 +2402,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	var ThreeApp = THREEAPP.Class.create('ThreeApp', null, ['Events', 'Options'])
 
 	.defaults({
-		root: '.'
+		root: '.',
+		log: {
+			debug: false,
+			info: false,
+			warn: true
+		}
 	})
 
 	.ctor(function ctor(vp, options) {
@@ -2532,12 +2537,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	// implement some logger methods
 	// pass through sprintf to console
 	.method('log', function log() {
+		if (!this.options.log.debug) return;
 		console.log(sprintf.apply(this, arguments));
 	})
 	.method('warn', function warn() {
+		if (!this.options.log.warn) return;
 		console.warn(sprintf.apply(this, arguments));
 	})
 	.method('info', function info() {
+		if (!this.options.log.info) return;
 		console.info(sprintf.apply(this, arguments));
 	})
 
@@ -2803,7 +2811,7 @@ onmessage = function(e)
 		// trigger single event
 		this.invoke('deleted', item);
 		// trigger generic hock
-		this.trigger('resized');
+		this.trigger('resizing');
 	})
 
 	// you may want to overload this
@@ -2841,6 +2849,18 @@ onmessage = function(e)
 		// trigger single event
 		this.invoke('inserted', obj);
 		// trigger generic hock
+		this.trigger('resizing');
+	})
+
+	.listen('resizing', function () {
+		// trigger only when ready
+		if (!this.isReady) return
+		// triggers again on ready!
+		this.trigger('resized');
+	})
+
+	.listen('ready', function () {
+		// dispatch resized to init
 		this.trigger('resized');
 	})
 
@@ -3272,8 +3292,9 @@ GrowingPacker.prototype = {
 	{
 		var ctx = this.context;
 		var opt = this.options;
-		ctx.font = opt.fontSize + "px "
-			+ opt.fontFamily;
+		var fontSize = label.fontSize || opt.fontSize;
+		var fontFamily = label.fontFamily || opt.fontFamily;
+		ctx.font = fontSize + "px " + fontFamily;
 		ctx.fillStyle = label.color || opt.fillStyle;
 		ctx.strokeStyle = label.stroke || opt.strokeStyle;
 		ctx.lineWidth = label.lineWidth || opt.lineWidth;
@@ -3286,12 +3307,14 @@ GrowingPacker.prototype = {
 		var y = fit.y + label.h;
 		y = y - margin - 1;
 		var ctx = this.context;
-		if (label.background) {
-			ctx.fillStyle = label.background;
+		var opt = this.options;
+		if (label.background || opt.background) {
+			ctx.fillStyle = label.background || opt.background;
 			ctx.fillRect(fit.x, fit.y, label.w, label.h);
 		}
-		if (label.border) {
-			ctx.strokeStyle = label.border;
+		if (label.borderStyle || opt.borderStyle) {
+			ctx.strokeStyle = label.borderStyle || opt.borderStyle;
+			ctx.lineWidth = label.borderWidth || opt.borderWidth || 1.0;
 			ctx.rect(fit.x, fit.y, label.w, label.h);
 			ctx.stroke();
 		}
@@ -3302,7 +3325,8 @@ GrowingPacker.prototype = {
 		var fit = label.fit;
 		var x = fit.x + margin;
 		var y = fit.y + label.h;
-		y = y - margin - 2
+		// not sure how to measure baseline offset?
+		y = y - margin - Math.round(label.h / 6);
 		var ctx = this.context;
 		var opt = this.options;
 		if (label.stroke || opt.strokeStyle) {
@@ -3352,7 +3376,8 @@ GrowingPacker.prototype = {
 		this.canvas.width = 128;
 	})
 
-	.listen('resized', function resized() {
+	.listen('resized', function resized()
+	{
 		// sort items by their size
 		this.items.sort(function (a, b) {
 			return Math.max(b.w, b.h) - Math.max(a.w, a.h);
@@ -3378,14 +3403,18 @@ GrowingPacker.prototype = {
 			setupDraw.call(this, this.items[i]);
 			drawText.call(this, this.items[i]);
 		}
+		// invoke async (delayed)
+		this.invoke('texture.drawn');
 	})
 
-	.listen('inserted', function inserted(obj) {
+	.listen('inserted', function inserted(label)
+	{
 		var ctx = this.context, options = this.options;
-		setupDraw.call(this, obj); // for measure text!
-		obj.h = margin + options.fontSize + margin;
-		var size = ctx.measureText(obj.txt);
-		obj.w = margin + size.width + margin;
+		setupDraw.call(this, label); // for measure text!
+		var fontSize = label.fontSize || options.fontSize;
+		label.h = margin + fontSize + margin;
+		var size = ctx.measureText(label.txt);
+		label.w = margin + size.width + margin;
 	})
 	
 	;
@@ -3410,9 +3439,26 @@ GrowingPacker.prototype = {
 
 	.proto('provides', 'labels')
 
-	.ctor(function (app) {
-		// simply create one manager
-		app.labels = new THREEAPP.Labels(app);
+	.defaults({
+		groupier: true
+	})
+
+	.ctor(function (app)
+	{
+		if (this.options.groupier) {
+			// dynamically add more group instances
+			app.labels = new THREEAPP.Grouped(app, {
+				ctor: THREEAPP.Objects.Labels,
+				hardLimit: 8192,
+				parent: app.scene
+			});
+		} else {
+			// only add one group with a fixed item limit
+			app.labels = new THREEAPP.Objects.Labels(app, {
+				hardLimit: 65536,
+				parent: app.scene
+			});
+		}
 	})
 
 	;
@@ -3504,9 +3550,6 @@ GrowingPacker.prototype = {
 		// reset draw count (set on resize)
 		geometry.maxInstancedCount = labels.items.length;
 
-		// needed to show texture initially?
-		labels.texture.needsUpdate = true;
-
 		// update label positions before rendering
 		labels.app.listen('preframe', function() {
 			geometry.attributes.offset.needsUpdate = true;
@@ -3529,25 +3572,27 @@ GrowingPacker.prototype = {
 
 	.listen('resized', function ()
 	{
-		if (this.geometry && this.items) {
-			var texWidth = this.canvas.width;
-			var texHeight = this.canvas.height;
-			var offsets = this.geometry.attributes.offset.array;
-			var uvs = this.geometry.attributes.uvs.array;
-			for (var i = 0; i < this.items.length; i++) {
-				var item = this.items[i];
-				uvs[i*4+0] = item.fit.x + margin;
-				uvs[i*4+1] = item.fit.y + margin;
-				uvs[i*4+2] = item.w - margin * 1;
-				uvs[i*4+3] = item.h - margin * 1;
-			}
-			if (this.texture) this.texture.needsUpdate = true;
-			this.geometry.attributes.offset.needsUpdate = true;
-			this.geometry.attributes.uvs.needsUpdate = true;
-			this.material.uniforms.texWidth.value = texWidth;
-			this.material.uniforms.texHeight.value = texHeight;
-			this.geometry.maxInstancedCount = this.items.length;
+		var texWidth = this.canvas.width;
+		var texHeight = this.canvas.height;
+		var offsets = this.geometry.attributes.offset.array;
+		var uvs = this.geometry.attributes.uvs.array;
+		for (var i = 0; i < this.items.length; i++) {
+			var item = this.items[i];
+			uvs[i*4+0] = item.fit.x;
+			uvs[i*4+1] = item.fit.y;
+			uvs[i*4+2] = item.w;
+			uvs[i*4+3] = item.h;
 		}
+		this.geometry.attributes.offset.needsUpdate = true;
+		this.geometry.attributes.uvs.needsUpdate = true;
+		this.material.uniforms.texWidth.value = texWidth;
+		this.material.uniforms.texHeight.value = texHeight;
+		this.geometry.maxInstancedCount = this.items.length;
+	})
+
+	.listen('texture.drawn', function ()
+	{
+		this.texture.needsUpdate = true;
 	})
 
 	;
@@ -9677,4 +9722,4 @@ TWEEN.Interpolation = {
 
 })(this);
 
-/* crc: 624ACE802C1F06771C1905D4014F60DD */
+/* crc: 5F84EAD6167F08D3F99FB05C079E52AF */

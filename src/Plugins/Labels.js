@@ -12,9 +12,26 @@
 
 	.proto('provides', 'labels')
 
-	.ctor(function (app) {
-		// simply create one manager
-		app.labels = new THREEAPP.Labels(app);
+	.defaults({
+		groupier: true
+	})
+
+	.ctor(function (app)
+	{
+		if (this.options.groupier) {
+			// dynamically add more group instances
+			app.labels = new THREEAPP.Grouped(app, {
+				ctor: THREEAPP.Objects.Labels,
+				hardLimit: 8192,
+				parent: app.scene
+			});
+		} else {
+			// only add one group with a fixed item limit
+			app.labels = new THREEAPP.Objects.Labels(app, {
+				hardLimit: 65536,
+				parent: app.scene
+			});
+		}
 	})
 
 	;

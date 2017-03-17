@@ -51,7 +51,7 @@
 		// trigger single event
 		this.invoke('deleted', item);
 		// trigger generic hock
-		this.trigger('resized');
+		this.trigger('resizing');
 	})
 
 	// you may want to overload this
@@ -89,6 +89,18 @@
 		// trigger single event
 		this.invoke('inserted', obj);
 		// trigger generic hock
+		this.trigger('resizing');
+	})
+
+	.listen('resizing', function () {
+		// trigger only when ready
+		if (!this.isReady) return
+		// triggers again on ready!
+		this.trigger('resized');
+	})
+
+	.listen('ready', function () {
+		// dispatch resized to init
 		this.trigger('resized');
 	})
 
