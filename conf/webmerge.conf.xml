@@ -41,6 +41,9 @@
 		<input path="src/Base/Object3D.js" />
 		<input path="src/Base/Scene.js" />
 		<input path="src/Base/LOD.js" />
+		<!-- material helpers -->
+		<input path="src/Materials/CustomMaterial.js" />
+		<input path="src/Materials/CustomPhong.js" />
 		<!-- some core plugins -->
 		<input path="src/Plugins/Clock.js" />
 		<input path="src/Plugins/Scene.js" />

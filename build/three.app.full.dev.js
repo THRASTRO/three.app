@@ -61,6 +61,10 @@ webmerge.includeJS('/src/Base/Scene.js?EF60849AA383');
 ;
 webmerge.includeJS('/src/Base/LOD.js?75B23E365339');
 ;
+webmerge.includeJS('/src/Materials/CustomMaterial.js?5D6ADB46C516');
+;
+webmerge.includeJS('/src/Materials/CustomPhong.js?BC83EF231640');
+;
 webmerge.includeJS('/src/Plugins/Clock.js?793393A474E9');
 ;
 webmerge.includeJS('/src/Plugins/Scene.js?008FBF9A5FA8');
@@ -135,4 +139,4 @@ webmerge.includeJS('/lib/three.dat.gui.js?6DC702232219');
 ;
 webmerge.includeJS('/lib/tween-16.6.0.js?64C27AF01BDE');
 
-/* crc: 5F84EAD6167F08D3F99FB05C079E52AF */
+/* crc: 829459B56023A90A35CA747245B8F8FC */

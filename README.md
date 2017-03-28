@@ -162,7 +162,7 @@ var Firmament = THREEAPP.Class.create('Firmament', THREE.Points, ['Resources'])
 // EO init
 ```
 
-## plugins
+## Plugins
 
 ToDo: documentation needed for all plugins!
 
@@ -218,6 +218,11 @@ var app = new THREEAPP.App(vp, {
 Plugin options are defined directly on the app options with
 the according plugin name (i.e. `Tasker` above). These options
 are passed directly to the plugin constructor too.
+
+## Material helpers
+
+- [CustomMaterial](src/Materials/CustomMaterial.js): Base class to extend materials
+- [CustomPhong](src/Materials/CustomPhong.js): Base class to extend MeshPhongMaterial
 
 # Issues
 

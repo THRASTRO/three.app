@@ -61,6 +61,10 @@ webmerge.includeJS('/src/Base/Scene.js?EF60849AA383');
 ;
 webmerge.includeJS('/src/Base/LOD.js?75B23E365339');
 ;
+webmerge.includeJS('/src/Materials/CustomMaterial.js?5D6ADB46C516');
+;
+webmerge.includeJS('/src/Materials/CustomPhong.js?BC83EF231640');
+;
 webmerge.includeJS('/src/Plugins/Clock.js?793393A474E9');
 ;
 webmerge.includeJS('/src/Plugins/Scene.js?008FBF9A5FA8');
@@ -93,4 +97,4 @@ webmerge.includeJS('/lib/sprintf-0.7-beta1.js?5E9AB2F7C788');
 ;
 webmerge.includeJS('/src/App.js?3B8FC68E2936');
 
-/* crc: 2EBEB11A6FCB9E2C028964125EC0650C */
+/* crc: 9876F092EA9DDF541C668D3E22BE3FE3 */
