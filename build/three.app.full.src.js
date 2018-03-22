@@ -355,7 +355,11 @@
 		}
 		// give the function a name (there is some cost attached to eval)
 		// there is no other way and it helps debugging in the console a lot!
-		if (name) eval("Klass = " + Klass.toString().replace(/\(\)/, name + '()'));
+		if (name) {
+			// catch and ignore possible errors since this step is optional (debug only)
+			try { eval("Klass = " + Klass.toString().replace(/\(\)/, ' ' + name + '()')); }
+			catch (err) { console.warn("Could not eval new fn body\n" + err + "\n" + klass); }
+		}
 		// let me be known on prototype
 		Klass.prototype.name = name;
 		// dispatch to the bread and butter mixin fn
@@ -10027,4 +10031,4 @@ TWEEN.Interpolation = {
 
 })(this);
 
-/* crc: 829459B56023A90A35CA747245B8F8FC */
+/* crc: A9EBB31B550BC749C836ACA0CE24DFF0 */

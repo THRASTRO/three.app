@@ -33,7 +33,7 @@ if (typeof webmerge.includeJS != 'function')
 ;
 webmerge.includeJS('/src/Base.js?A7434CBA241B');
 ;
-webmerge.includeJS('/src/Base/Class.js?1BC236504EA6');
+webmerge.includeJS('/src/Base/Class.js?123F94203D68');
 ;
 webmerge.includeJS('/src/Mixins/Options.js?A436FFB7E71E');
 ;
@@ -139,4 +139,4 @@ webmerge.includeJS('/lib/three.dat.gui.js?6DC702232219');
 ;
 webmerge.includeJS('/lib/tween-16.6.0.js?64C27AF01BDE');
 
-/* crc: 829459B56023A90A35CA747245B8F8FC */
+/* crc: A9EBB31B550BC749C836ACA0CE24DFF0 */

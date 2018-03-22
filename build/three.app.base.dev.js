@@ -33,7 +33,7 @@ if (typeof webmerge.includeJS != 'function')
 ;
 webmerge.includeJS('/src/Base.js?A7434CBA241B');
 ;
-webmerge.includeJS('/src/Base/Class.js?1BC236504EA6');
+webmerge.includeJS('/src/Base/Class.js?123F94203D68');
 ;
 webmerge.includeJS('/src/Mixins/Options.js?A436FFB7E71E');
 ;
@@ -97,4 +97,4 @@ webmerge.includeJS('/lib/sprintf-0.7-beta1.js?5E9AB2F7C788');
 ;
 webmerge.includeJS('/src/App.js?3B8FC68E2936');
 
-/* crc: 9876F092EA9DDF541C668D3E22BE3FE3 */
+/* crc: 2F2C0FEB633D96F0062A3FAC3FD37017 */
